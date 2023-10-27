@@ -15,7 +15,9 @@ func CreateTypedCommand[T TypedCommand](instance T) *cobra.Command {
 	desc := ReflectCommandDescriptor(instance)
 
 	cmd := &cobra.Command{
-		Use: desc.use,
+		Use:   desc.use,
+		Short: desc.short,
+		Long:  desc.long,
 		Run: func(cmd *cobra.Command, args []string) {
 			handler := cmd.Context().Value(desc.key).(T)
 			UnmarshalCommand(cmd, desc)

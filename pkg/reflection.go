@@ -24,6 +24,8 @@ func ReflectCommandDescriptor[T any](n T) CommandDescriptor {
 	valueType := reflect.TypeOf(value.Interface())
 	valueTypeName := valueType.Name()
 	use := internal.ExtractCommandUse(valueTypeName)
+	shortDescriptionText := ""
+	longDescriptionText := ""
 
 	stack := internal.MakeStack[valueItem]()
 	stack.Push(valueItem{value: value, valueType: valueType})
@@ -47,6 +49,8 @@ func ReflectCommandDescriptor[T any](n T) CommandDescriptor {
 			fieldType := field.Type
 			if fieldType == reflect.TypeOf(CommandName{}) {
 				use = flagName
+				shortDescriptionText = field.Tag.Get("short")
+				longDescriptionText = field.Tag.Get("long")
 				continue
 			}
 
@@ -70,7 +74,7 @@ func ReflectCommandDescriptor[T any](n T) CommandDescriptor {
 		}
 	}
 
-	return NewCommandDescriptor(use, flags)
+	return NewCommandDescriptor(use, shortDescriptionText, longDescriptionText, flags)
 }
 
 func UnmarshalCommand(source *cobra.Command, desc CommandDescriptor) {

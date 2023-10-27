@@ -67,14 +67,18 @@ func (d *FlagDescriptor) SetValue(value interface{}) error {
 type CommandDescriptor struct {
 	key   string
 	use   string
+	short string
+	long  string
 	flags []FlagDescriptor
 }
 
-func NewCommandDescriptor(use string, flags []FlagDescriptor) CommandDescriptor {
+func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor) CommandDescriptor {
 	key := makeCommandKey(use)
 	return CommandDescriptor{
 		key:   key,
 		use:   use,
+		short: short,
+		long:  long,
 		flags: flags,
 	}
 }
