@@ -4,7 +4,7 @@
 
 ## Usage
 
-Using the Cobra extensions is a no-brainer. Use, `go get` to install the version of the library.
+Using the Cobra extensions is a no-brainer. Use, `go get` to install the latest version of the library.
 
 ````bash
 $ go get -u github.com/matzefriedrich/cobra-extensions@latest
