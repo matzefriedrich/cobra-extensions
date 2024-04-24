@@ -2,13 +2,14 @@ package commands
 
 import (
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/matzefriedrich/cobra-extensions/abstractions"
 	"github.com/matzefriedrich/cobra-extensions/pkg"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
 )
 
-var _ pkg.ExecutableCommand = &decryptMessageCommand{}
+var _ abstractions.ExecutableCommand = &decryptMessageCommand{}
 
 type decryptMessageCommand struct {
 	cryptCommand
