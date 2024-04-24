@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+var _ pkg.ExecutableCommand = &encryptMessageCommand{}
+
 type encryptMessageCommand struct {
 	cryptCommand
 	use     pkg.CommandName `flag:"encrypt" short:"Encrypt a message." long:"Encrypt a message and protects it with a passphrase."`

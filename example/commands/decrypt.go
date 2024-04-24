@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+var _ pkg.ExecutableCommand = &decryptMessageCommand{}
+
 type decryptMessageCommand struct {
 	cryptCommand
 	use pkg.CommandName `flag:"decrypt" short:"Decrypt a message." long:"Reads an armored message from stdin and decrypts it."`

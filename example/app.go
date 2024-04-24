@@ -1,18 +1,23 @@
 package main
 
 import (
+	"os"
+
 	"github.com/matzefriedrich/cobra-extensions/example/commands"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func main() {
 
-	app := &cobra.Command{}
+	app := NewCommandLineApplication()
 
-	app.AddCommand(
-		commands.CreateEncryptMessageCommand(),
-		commands.CreateDecryptMessageCommand())
+	app.
+		AddCommand(commands.CreateHelloCommand(), nil).
+		AddCommand(commands.CreateCryptCommand(), func(crypto CommandSetup) {
+			crypto.
+				AddCommand(commands.CreateEncryptMessageCommand(), nil).
+				AddCommand(commands.CreateDecryptMessageCommand(), nil)
+		})
 
 	err := app.Execute()
 	if err != nil {
