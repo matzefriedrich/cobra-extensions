@@ -86,7 +86,28 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 
 func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, target ArgumentsDescriptor) bool {
 
-	if fieldType.Kind() == reflect.Struct {
+	m := ReflectedMember{value: fieldValue, memberType: fieldType}
+
+	hasCommandArgs := false
+
+	m.EnumerateFields(func(index int, field ReflectedField) {
+		switch field.typeKind() {
+		case reflect.String:
+			if hasCommandArgs {
+				target.With(Args(ArgumentDescriptor{value: field.value, argumentIndex: index - 1}))
+			}
+		case reflect.Struct:
+			if field.isType(abstractions.CommandArgs{}) {
+				compatible, ok := field.getInterfaceValue().(abstractions.CommandArgs)
+				if ok {
+					target.With(MinimumArgs(compatible.MinimumArgs))
+					hasCommandArgs = true
+				}
+			}
+		}
+	})
+
+	/* if fieldType.Kind() == reflect.Struct {
 		fieldTypeNumFields := fieldType.NumField()
 		for i := 0; i < fieldTypeNumFields; i++ {
 			structFieldType := fieldType.Field(i)
@@ -108,5 +129,6 @@ func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Va
 		}
 	}
 
-	return false
+	return false */
+	return hasCommandArgs
 }
