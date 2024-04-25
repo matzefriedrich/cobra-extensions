@@ -8,16 +8,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// helloCommand A command handler type for the hello command.
 type helloCommand struct {
-	use       abstractions.CommandName `flag:"hello" short:""`
+	use       abstractions.CommandName `flag:"hello"`
 	Arguments helloArgs
 }
 
+// helloArgs Stores values for positional arguments of the hello command.
 type helloArgs struct {
 	abstractions.CommandArgs
 	Name string
 }
 
+// CreateHelloCommand Creates a new helloCommand instance.
 func CreateHelloCommand() *cobra.Command {
 	instance := &helloCommand{
 		Arguments: helloArgs{

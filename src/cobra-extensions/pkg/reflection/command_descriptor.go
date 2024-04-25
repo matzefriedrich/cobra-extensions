@@ -16,28 +16,8 @@ type CommandDescriptor struct {
 	arguments ArgumentsDescriptor
 }
 
-func (d *CommandDescriptor) Arguments() ArgumentsDescriptor {
-	return d.arguments
-}
-
 func (d *CommandDescriptor) Key() string {
 	return d.key
-}
-
-func (d *CommandDescriptor) LongDescriptionText() string {
-	return d.long
-}
-
-func (d *CommandDescriptor) ShortDescriptionText() string {
-	return d.short
-}
-
-func (d *CommandDescriptor) Use() string {
-	return d.use
-}
-
-func (d *CommandDescriptor) Flags() []FlagDescriptor {
-	return d.flags
 }
 
 func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments ArgumentsDescriptor) CommandDescriptor {
@@ -59,7 +39,11 @@ func makeCommandKey(use string) string {
 	return key
 }
 
+// BindFlags Binds the reflected flags configuration to the given *cobra.Command object.
 func (d *CommandDescriptor) BindFlags(target *cobra.Command) {
+	if target == nil {
+		return
+	}
 	for _, f := range d.flags {
 		targetFlags := target.Flags()
 		name := f.name
@@ -71,6 +55,41 @@ func (d *CommandDescriptor) BindFlags(target *cobra.Command) {
 			targetFlags.Int64(name, f.AsInt64(), usage)
 		case reflect.Bool:
 			targetFlags.Bool(name, f.AsBool(), usage)
+		}
+	}
+}
+
+// BindArguments Binds the reflected arguments configuration to the given *cobra.Command object.
+func (d *CommandDescriptor) BindArguments(target *cobra.Command) {
+	if target == nil {
+		return
+	}
+
+	target.Use = d.use
+	target.Short = d.short
+	target.Long = d.long
+
+	d.arguments.BindArguments(target)
+}
+
+func (d *CommandDescriptor) UnmarshalArgumentValues(args ...string) {
+	d.arguments.BindArgumentValues(args...)
+}
+
+func (d *CommandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
+	flags := target.Flags()
+	for _, f := range d.flags {
+		flagName := f.name
+		switch f.kind {
+		case reflect.String:
+			value, _ := flags.GetString(flagName)
+			_ = f.SetValue(value)
+		case reflect.Int, reflect.Int64:
+			value, _ := flags.GetInt64(flagName)
+			_ = f.SetValue(value)
+		case reflect.Bool:
+			value, _ := flags.GetBool(flagName)
+			_ = f.SetValue(value)
 		}
 	}
 }

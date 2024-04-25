@@ -10,6 +10,18 @@ type TypedCommand interface {
 	Execute()
 }
 
+type commandContextValue struct {
+	handler    TypedCommand
+	descriptor reflection.CommandDescriptor
+}
+
+// run Binds argument and flag values and executes the command.
+func (c *commandContextValue) run(target *cobra.Command, args ...string) {
+	c.descriptor.UnmarshalFlagValues(target)
+	c.descriptor.UnmarshalArgumentValues(args...)
+	c.handler.Execute()
+}
+
 // CreateTypedCommand Creates a new typed command from the given handler instance.
 func CreateTypedCommand[T TypedCommand](instance T) *cobra.Command {
 
@@ -19,21 +31,21 @@ func CreateTypedCommand[T TypedCommand](instance T) *cobra.Command {
 	commandKey := desc.Key()
 
 	cmd := &cobra.Command{
-		Use:   desc.Use(),
-		Short: desc.ShortDescriptionText(),
-		Long:  desc.LongDescriptionText(),
 		Run: func(cmd *cobra.Command, args []string) {
-			handler := cmd.Context().Value(commandKey).(T)
-			reflection.UnmarshalCommand(cmd, desc, args...)
-			handler.Execute()
+			v := cmd.Context().Value(commandKey).(*commandContextValue)
+			v.run(cmd, args...)
 		},
 	}
 
-	cmd.Args = cobra.MinimumNArgs(desc.Arguments().MinimumArgs)
-
+	desc.BindArguments(cmd)
 	desc.BindFlags(cmd)
 
-	ctx := context.WithValue(context.Background(), commandKey, instance)
+	contextValue := &commandContextValue{
+		handler:    instance,
+		descriptor: desc,
+	}
+
+	ctx := context.WithValue(context.Background(), commandKey, contextValue)
 	cmd.SetContext(ctx)
 
 	return cmd

@@ -4,8 +4,6 @@ import (
 	"github.com/matzefriedrich/cobra-extensions/internal"
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"reflect"
-
-	"github.com/spf13/cobra"
 )
 
 type commandReflector[T any] struct {
@@ -16,12 +14,11 @@ func NewCommandReflector[T any]() CommandReflector[T] {
 	return &commandReflector[T]{}
 }
 
+// ReflectCommandDescriptor Reflects all metadata from a command handler and returns a new CommandDescriptor instance.
 func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 
 	var flags = make([]FlagDescriptor, 0)
-	var arguments = ArgumentsDescriptor{
-		Args: make([]ArgumentDescriptor, 0),
-	}
+	arguments := NewArgumentsDescriptorWith()
 
 	value := reflect.ValueOf(n)
 	if value.Kind() == reflect.Ptr {
@@ -63,7 +60,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 
 			fieldValue := next.value.Field(i)
 
-			if tryReflectArgumentsDescriptor(fieldType, fieldValue, &arguments) {
+			if tryReflectArgumentsDescriptor(fieldType, fieldValue, arguments) {
 				continue
 			}
 
@@ -78,7 +75,6 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 			if isExportedField {
 				usage := field.Tag.Get("usage")
 				fieldTypeKind := fieldType.Kind()
-
 				desc := NewFlagDescriptor(flagName, usage, fieldTypeKind, fieldValue)
 				flags = append(flags, desc)
 			}
@@ -88,7 +84,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 	return NewCommandDescriptor(use, shortDescriptionText, longDescriptionText, flags, arguments)
 }
 
-func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, target *ArgumentsDescriptor) bool {
+func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, target ArgumentsDescriptor) bool {
 
 	if fieldType.Kind() == reflect.Struct {
 		fieldTypeNumFields := fieldType.NumField()
@@ -98,12 +94,12 @@ func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Va
 				structFieldValue := fieldValue.Field(i)
 				compatible, ok := structFieldValue.Interface().(abstractions.CommandArgs)
 				if ok {
-					target.MinimumArgs = compatible.MinimumArgs
+					target.With(MinimumArgs(compatible.MinimumArgs))
 					for j := i + 1; j < fieldTypeNumFields; j++ {
 						kind := fieldType.Field(j).Type.Kind()
 						if kind == reflect.String {
 							arg := ArgumentDescriptor{value: fieldValue.Field(j), argumentIndex: j - 1}
-							target.Args = append(target.Args, arg)
+							target.With(Args(arg))
 						}
 					}
 					return true
@@ -113,32 +109,4 @@ func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Va
 	}
 
 	return false
-}
-
-func UnmarshalCommand(source *cobra.Command, desc CommandDescriptor, args ...string) {
-
-	for _, f := range desc.Flags() {
-		flags := source.Flags()
-		flagName := f.Name()
-		switch f.Kind() {
-		case reflect.String:
-			value, _ := flags.GetString(flagName)
-			_ = f.SetValue(value)
-		case reflect.Int, reflect.Int64:
-			value, _ := flags.GetInt64(flagName)
-			_ = f.SetValue(value)
-		case reflect.Bool:
-			value, _ := flags.GetBool(flagName)
-			_ = f.SetValue(value)
-		}
-	}
-
-	arguments := desc.Arguments()
-	for _, a := range arguments.Args {
-		index := a.argumentIndex
-		if index < len(args) {
-			value := args[index]
-			_ = a.SetValue(value)
-		}
-	}
 }
