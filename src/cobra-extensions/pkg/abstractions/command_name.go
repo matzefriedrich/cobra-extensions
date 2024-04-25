@@ -1,5 +1,6 @@
-package pkg
+package abstractions
 
 type CommandName struct {
 	name string
 }
+

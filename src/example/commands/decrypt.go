@@ -3,14 +3,17 @@ package commands
 import (
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/matzefriedrich/cobra-extensions/pkg"
+	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"github.com/spf13/cobra"
 	"io"
 	"os"
 )
 
+var _ abstractions.ExecutableCommand = &decryptMessageCommand{}
+
 type decryptMessageCommand struct {
 	cryptCommand
-	use pkg.CommandName `flag:"decrypt" short:"Decrypt a message." long:"Reads an armored message from stdin and decrypts it."`
+	use abstractions.CommandName `flag:"decrypt" short:"Decrypt a message." long:"Reads an armored message from stdin and decrypts it."`
 }
 
 func CreateDecryptMessageCommand() *cobra.Command {
