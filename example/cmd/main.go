@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/matzefriedrich/cobra-extensions/example/commands"
 	"os"
 
-	"github.com/matzefriedrich/cobra-extensions-example/commands"
 	"github.com/spf13/cobra"
 )
 

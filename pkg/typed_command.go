@@ -2,8 +2,8 @@ package pkg
 
 import (
 	"context"
+	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
 
-	"github.com/matzefriedrich/cobra-extensions/v0/pkg/reflection"
 	"github.com/spf13/cobra"
 )
 

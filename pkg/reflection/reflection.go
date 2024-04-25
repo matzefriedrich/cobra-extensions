@@ -1,10 +1,9 @@
 package reflection
 
 import (
+	"github.com/matzefriedrich/cobra-extensions/internal"
+	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"reflect"
-
-	"github.com/matzefriedrich/cobra-extensions/v0/internal"
-	"github.com/matzefriedrich/cobra-extensions/v0/pkg/abstractions"
 )
 
 type commandReflector[T any] struct {
