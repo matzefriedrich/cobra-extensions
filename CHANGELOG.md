@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Turns the repository into a multi-module workspace (examples are now separated)
+- Refactors the whole package (separates types and functions into several new smalled module types)
+
 
 ## [0.1.0] - cobra-extensions v0.1.0, 2023-10-27
 

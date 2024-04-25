@@ -2,21 +2,30 @@ package commands
 
 import (
 	"fmt"
+	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 
 	"github.com/matzefriedrich/cobra-extensions/pkg"
 	"github.com/spf13/cobra"
 )
 
 type helloCommand struct {
-	use  pkg.CommandName `flag:"hello"`
-	Name string          `flag:"name" usage:"Your name"`
+	use       abstractions.CommandName `flag:"hello" short:""`
+	Arguments helloArgs
+}
+
+type helloArgs struct {
+	abstractions.CommandArgs
+	Name string
 }
 
 func CreateHelloCommand() *cobra.Command {
-	instance := &helloCommand{}
+	instance := &helloCommand{
+		Arguments: helloArgs{
+			CommandArgs: abstractions.NewCommandArgs(1),
+		}}
 	return pkg.CreateTypedCommand(instance)
 }
 
 func (c *helloCommand) Execute() {
-	_ = fmt.Sprintf("Hello %s.", c.Name)
+	fmt.Printf("Hello %s.\n", c.Arguments.Name)
 }

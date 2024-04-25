@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
 	"github.com/spf13/cobra"
 )
 
@@ -12,22 +13,27 @@ type TypedCommand interface {
 // CreateTypedCommand Creates a new typed command from the given handler instance.
 func CreateTypedCommand[T TypedCommand](instance T) *cobra.Command {
 
-	desc := ReflectCommandDescriptor(instance)
+	reflector := reflection.NewCommandReflector[T]()
+	desc := reflector.ReflectCommandDescriptor(instance)
+
+	commandKey := desc.Key()
 
 	cmd := &cobra.Command{
-		Use:   desc.use,
-		Short: desc.short,
-		Long:  desc.long,
+		Use:   desc.Use(),
+		Short: desc.ShortDescriptionText(),
+		Long:  desc.LongDescriptionText(),
 		Run: func(cmd *cobra.Command, args []string) {
-			handler := cmd.Context().Value(desc.key).(T)
-			UnmarshalCommand(cmd, desc)
+			handler := cmd.Context().Value(commandKey).(T)
+			reflection.UnmarshalCommand(cmd, desc, args...)
 			handler.Execute()
 		},
 	}
 
+	cmd.Args = cobra.MinimumNArgs(desc.Arguments().MinimumArgs)
+
 	desc.BindFlags(cmd)
 
-	ctx := context.WithValue(context.Background(), desc.key, instance)
+	ctx := context.WithValue(context.Background(), commandKey, instance)
 	cmd.SetContext(ctx)
 
 	return cmd
