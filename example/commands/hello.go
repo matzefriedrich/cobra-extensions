@@ -2,9 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 
-	"github.com/matzefriedrich/cobra-extensions/pkg"
+	"github.com/matzefriedrich/cobra-extensions/v0/pkg/abstractions"
+
+	"github.com/matzefriedrich/cobra-extensions/v0/pkg"
 	"github.com/spf13/cobra"
 )
 

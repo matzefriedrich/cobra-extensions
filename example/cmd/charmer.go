@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/matzefriedrich/cobra-extensions-example/commands"
-	"github.com/matzefriedrich/cobra-extensions/pkg/charmer"
+	"github.com/matzefriedrich/cobra-extensions/v0/pkg/charmer"
 	"log"
 )
 

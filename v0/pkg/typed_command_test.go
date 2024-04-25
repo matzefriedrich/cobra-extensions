@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
+	"github.com/matzefriedrich/cobra-extensions/v0/pkg/abstractions"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"testing"

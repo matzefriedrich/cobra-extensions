@@ -1,12 +1,13 @@
 package commands
 
 import (
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
-	"github.com/spf13/cobra"
 	"io"
 	"os"
+
+	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/matzefriedrich/cobra-extensions/v0/pkg"
+	"github.com/matzefriedrich/cobra-extensions/v0/pkg/abstractions"
+	"github.com/spf13/cobra"
 )
 
 var _ abstractions.ExecutableCommand = &decryptMessageCommand{}

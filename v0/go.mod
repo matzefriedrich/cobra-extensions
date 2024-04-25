@@ -1,11 +1,11 @@
-module github.com/matzefriedrich/cobra-extensions
+module github.com/matzefriedrich/cobra-extensions/v0
 
 go 1.21
 
 require (
 	github.com/google/uuid v1.4.0
-	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.4
+	github.com/spf13/cobra v1.8.0
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
