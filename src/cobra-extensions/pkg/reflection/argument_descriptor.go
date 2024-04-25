@@ -3,23 +3,34 @@ package reflection
 import (
 	"github.com/spf13/cobra"
 	"reflect"
+	"strconv"
 )
 
-// ArgumentDescriptor Stores the position and a value reference for single positional argument.
+// ArgumentDescriptor Stores the position and a instanceValue reference for single positional argument.
 type ArgumentDescriptor struct {
 	argumentIndex int
 	value         reflect.Value
+	typeKind      reflect.Kind
 }
 
-// ArgumentIndex Gets a value indicating the argument position in the args array.
+// ArgumentIndex Gets a instanceValue indicating the argument position in the args array.
 func (a *ArgumentDescriptor) ArgumentIndex() int {
 	return a.argumentIndex
 }
 
-// SetValue Applies the argument value to the underlying structure.
-func (a *ArgumentDescriptor) SetValue(value string) error {
+// SetString Applies a string argument to the underlying structure.
+func (a *ArgumentDescriptor) SetString(value string) {
 	a.value.SetString(value)
-	return nil
+}
+
+// SetInt64 Applies an int64 argument to the underlying structure.
+func (a *ArgumentDescriptor) SetInt64(n int64) {
+	a.value.SetInt(n)
+}
+
+// SetBool Applies a boolean argument to the underlying structure.
+func (a *ArgumentDescriptor) SetBool(b bool) {
+	a.value.SetBool(b)
 }
 
 type ArgumentsDescriptor interface {
@@ -44,7 +55,22 @@ func (d *argumentsDescriptor) BindArgumentValues(args ...string) {
 		index := a.argumentIndex
 		if index < len(args) {
 			value := args[index]
-			_ = a.SetValue(value)
+			switch a.typeKind {
+			case reflect.String:
+				a.SetString(value)
+			case reflect.Int64:
+				n, err := strconv.ParseInt(value, 10, 64)
+				if err == nil {
+					a.SetInt64(n)
+				}
+			case reflect.Bool:
+				b, err := strconv.ParseBool(value)
+				if err == nil {
+					a.SetBool(b)
+				}
+			default:
+				panic("unsupported type")
+			}
 		}
 	}
 }

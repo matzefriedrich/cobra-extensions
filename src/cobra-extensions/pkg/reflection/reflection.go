@@ -60,7 +60,8 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 
 			fieldValue := next.value.Field(i)
 
-			if tryReflectArgumentsDescriptor(fieldType, fieldValue, arguments) {
+			m := ReflectedObject{instanceValue: fieldValue, objectType: fieldType}
+			if tryReflectArgumentsDescriptor(m, arguments) {
 				continue
 			}
 
@@ -84,17 +85,20 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 	return NewCommandDescriptor(use, shortDescriptionText, longDescriptionText, flags, arguments)
 }
 
-func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, target ArgumentsDescriptor) bool {
-
-	m := ReflectedMember{value: fieldValue, memberType: fieldType}
+func tryReflectArgumentsDescriptor(m ReflectedObject, target ArgumentsDescriptor) bool {
 
 	hasCommandArgs := false
 
 	m.EnumerateFields(func(index int, field ReflectedField) {
 		switch field.typeKind() {
 		case reflect.String:
+			fallthrough
+		case reflect.Int64:
+			fallthrough
+		case reflect.Bool:
 			if hasCommandArgs {
-				target.With(Args(ArgumentDescriptor{value: field.value, argumentIndex: index - 1}))
+				descriptor := ArgumentDescriptor{typeKind: field.typeKind(), value: field.value, argumentIndex: index - 1}
+				target.With(Args(descriptor))
 			}
 		case reflect.Struct:
 			if field.isType(abstractions.CommandArgs{}) {
@@ -104,31 +108,10 @@ func tryReflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Va
 					hasCommandArgs = true
 				}
 			}
+		default:
+			panic("unhandled default case")
 		}
 	})
 
-	/* if fieldType.Kind() == reflect.Struct {
-		fieldTypeNumFields := fieldType.NumField()
-		for i := 0; i < fieldTypeNumFields; i++ {
-			structFieldType := fieldType.Field(i)
-			if structFieldType.Type == reflect.TypeOf(abstractions.CommandArgs{}) {
-				structFieldValue := fieldValue.Field(i)
-				compatible, ok := structFieldValue.Interface().(abstractions.CommandArgs)
-				if ok {
-					target.With(MinimumArgs(compatible.MinimumArgs))
-					for j := i + 1; j < fieldTypeNumFields; j++ {
-						kind := fieldType.Field(j).Type.Kind()
-						if kind == reflect.String {
-							arg := ArgumentDescriptor{value: fieldValue.Field(j), argumentIndex: j - 1}
-							target.With(Args(arg))
-						}
-					}
-					return true
-				}
-			}
-		}
-	}
-
-	return false */
 	return hasCommandArgs
 }

@@ -96,9 +96,9 @@ type testCommandWithPositionalArgs struct {
 
 type testCommandArgs struct {
 	abstractions.CommandArgs
-	FirstArgument  string
-	SecondArgument string
-	AAA            string
+	TextArgument    string
+	NumericArgument int64
+	BooleanArgument bool
 }
 
 func (t *testCommandWithPositionalArgs) Execute() {
@@ -113,7 +113,7 @@ func Test_CreateTypedCommand_with_positional_args(t *testing.T) {
 	}
 
 	app := &cobra.Command{}
-	app.SetArgs([]string{"test3", "Hello", "World", "ZZZ"})
+	app.SetArgs([]string{"test3", "Hello", "5", "true"})
 
 	cmd := CreateTypedCommand(instance)
 	app.AddCommand(cmd)
@@ -122,7 +122,9 @@ func Test_CreateTypedCommand_with_positional_args(t *testing.T) {
 	_ = app.Execute()
 
 	// Assert
-	assert.Equal(t, "Hello", instance.Arguments.FirstArgument)
-	assert.Equal(t, "World", instance.Arguments.SecondArgument)
-	assert.Equal(t, "ZZZ", instance.Arguments.AAA)
+	arguments := instance.Arguments
+
+	assert.Equal(t, "Hello", arguments.TextArgument)
+	assert.Equal(t, int64(5), arguments.NumericArgument)
+	assert.Equal(t, true, arguments.BooleanArgument)
 }

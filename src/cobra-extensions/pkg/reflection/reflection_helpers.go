@@ -2,9 +2,9 @@ package reflection
 
 import "reflect"
 
-type ReflectedMember struct {
-	value      reflect.Value
-	memberType reflect.Type
+type ReflectedObject struct {
+	instanceValue reflect.Value
+	objectType    reflect.Type
 }
 
 type ReflectedField struct {
@@ -12,20 +12,29 @@ type ReflectedField struct {
 	value reflect.Value
 }
 
-func (m *ReflectedMember) Kind() reflect.Kind {
-	return m.memberType.Kind()
+func ReflectObject(n interface{}) *ReflectedObject {
+	value := reflect.ValueOf(n)
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+	valueType := reflect.TypeOf(value.Interface())
+	return &ReflectedObject{instanceValue: value, objectType: valueType}
+}
+
+func (m *ReflectedObject) Kind() reflect.Kind {
+	return m.objectType.Kind()
 }
 
 type FieldEnumeratorCallback func(index int, field ReflectedField)
 
-func (m *ReflectedMember) EnumerateFields(iterFunc FieldEnumeratorCallback) {
+func (m *ReflectedObject) EnumerateFields(iterFunc FieldEnumeratorCallback) {
 	if m.Kind() != reflect.Struct {
 		return
 	}
-	numFields := m.memberType.NumField()
+	numFields := m.objectType.NumField()
 	for i := 0; i < numFields; i++ {
-		structField := m.memberType.Field(i)
-		structFieldValue := m.value.Field(i)
+		structField := m.objectType.Field(i)
+		structFieldValue := m.instanceValue.Field(i)
 		field := ReflectedField{field: structField, value: structFieldValue}
 		iterFunc(i, field)
 	}

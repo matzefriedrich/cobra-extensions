@@ -62,5 +62,5 @@ func (d *FlagDescriptor) SetValue(value interface{}) error {
 }
 
 func invalidValueError() error {
-	return errors.New("the specified value does not match the flag type")
+	return errors.New("the specified instanceValue does not match the flag type")
 }
