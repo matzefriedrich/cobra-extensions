@@ -1,9 +1,10 @@
 package reflection
 
 import (
+	"reflect"
+
 	"github.com/matzefriedrich/cobra-extensions/internal"
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
-	"reflect"
 )
 
 type commandReflector[T any] struct {
@@ -90,16 +91,18 @@ func tryReflectArgumentsDescriptor(m ReflectedObject, target ArgumentsDescriptor
 	hasCommandArgs := false
 
 	m.EnumerateFields(func(index int, field ReflectedField) {
-		switch field.typeKind() {
+		fieldTypeKind := field.typeKind()
+		switch fieldTypeKind {
 		case reflect.String:
 			fallthrough
 		case reflect.Int64:
 			fallthrough
 		case reflect.Bool:
 			if hasCommandArgs {
-				descriptor := ArgumentDescriptor{typeKind: field.typeKind(), value: field.value, argumentIndex: index - 1}
+				descriptor := ArgumentDescriptor{typeKind: fieldTypeKind, value: field.value, argumentIndex: index - 1}
 				target.With(Args(descriptor))
 			}
+		case reflect.Interface:
 		case reflect.Struct:
 			if field.isType(abstractions.CommandArgs{}) {
 				compatible, ok := field.getInterfaceValue().(abstractions.CommandArgs)
