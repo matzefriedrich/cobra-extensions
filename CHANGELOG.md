@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
-## [0.2.4] - cobra-extensions v0.2.4, 2024-06-12
+## [0.2.5] - cobra-extensions v0.2.5, 2024-06-12
 
 ### Fixes
 
-- The `reflection` module panicked when reflecting fields with an interface type.
+- The `reflection` module ignores fields of unsupported types
 
 
 ## [0.2.3] - cobra-extensions v0.2.3, 2024-04-25
