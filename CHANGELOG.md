@@ -5,12 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.0] - cobra-extensions v0.2.0, 2024-04-25
+## [Unreleased]
+
+
+## [0.2.4] - cobra-extensions v0.2.4, 2024-06-12
+
+### Fixes
+
+- The `reflection` module panicked when reflecting fields with an interface type.
+
+
+## [0.2.3] - cobra-extensions v0.2.3, 2024-04-25
 
 ### Added
 
-- You can now tame the cobra with the `charmer` module; see `src/example/cmd/charmer.go`
-- Support for positional arguments (pass values to commands without named flags); see `src/example/cmd/hello.go`
+- You can now tame the cobra with the `charmer` module; see `example/cmd/charmer/charmer.go`
+- Support for positional arguments (pass values to commands without named flags); see `example/commands/hello.go`
 
 ### Changed
 

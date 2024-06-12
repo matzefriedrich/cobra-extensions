@@ -4,6 +4,7 @@ import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"testing"
 )
 
@@ -32,12 +33,17 @@ func Test_CreateTypedCommand(t *testing.T) {
 	assert.Equal(t, "Hello World", instance.P1)
 }
 
+type logger struct {
+	w io.Writer
+}
+
 type testCommand2 struct {
 	testCommand1
 	name        abstractions.CommandName `flag:"test"`
 	P2          int64                    `flag:"param2"`
 	P3          int                      `flag:"p3"`
 	BooleanFlag bool                     `flag:"b"`
+	logger      logger
 }
 
 func Test_CreateTypedCommand_with_base_template(t *testing.T) {
