@@ -1,9 +1,10 @@
 package reflection
 
 import (
+	"reflect"
+
 	"github.com/matzefriedrich/cobra-extensions/internal"
 	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
-	"reflect"
 )
 
 type commandReflector[T any] struct {
@@ -49,6 +50,9 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 			isExportedField := field.PkgPath == ""
 
 			flagName := field.Tag.Get("flag")
+			if len(flagName) == 0 {
+				continue
+			}
 
 			fieldType := field.Type
 			if fieldType == reflect.TypeOf(abstractions.CommandName{}) {
