@@ -34,7 +34,8 @@ func Test_CreateTypedCommand(t *testing.T) {
 }
 
 type logger struct {
-	w io.Writer
+	w                    io.Writer
+	unsupportedFieldType int8
 }
 
 type testCommand2 struct {

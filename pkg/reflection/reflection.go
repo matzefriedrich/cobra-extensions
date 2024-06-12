@@ -111,8 +111,6 @@ func tryReflectArgumentsDescriptor(m ReflectedObject, target ArgumentsDescriptor
 					hasCommandArgs = true
 				}
 			}
-		default:
-			panic("unhandled default case")
 		}
 	})
 
