@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.6] - cobra-extensions v0.2.6, 2024-08-27
+
+### Added
+
+- Adds the `NewRootCommand` helper method that can be used to create root `cobra.Command` objects with application name and description.
+
+### Changed
+
+- Changes the `NewCommandLineApplication` method to set the application name and description (required to generate proper completion scripts for apps)
+
+- Adopts changes to examples
 
 
 ## [0.2.5] - cobra-extensions v0.2.5, 2024-06-12
