@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/matzefriedrich/cobra-extensions/example/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/charmer"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -9,7 +10,7 @@ import (
 
 func main() {
 
-	app := &cobra.Command{}
+	app := charmer.NewRootCommand("simple-example", "")
 
 	app.AddCommand(commands.CreateHelloCommand())
 
