@@ -1,6 +1,6 @@
 module github.com/matzefriedrich/cobra-extensions
 
-go 1.21
+go 1.23
 
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5
