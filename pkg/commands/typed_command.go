@@ -1,19 +1,15 @@
-package pkg
+package commands
 
 import (
 	"context"
-	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
-
+	"github.com/matzefriedrich/cobra-extensions/internal/reflection"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 )
 
-type TypedCommand interface {
-	Execute()
-}
-
 type commandContextValue struct {
-	handler    TypedCommand
-	descriptor reflection.CommandDescriptor
+	handler    types.TypedCommand
+	descriptor types.CommandDescriptor
 }
 
 // run Binds argument and flag values and executes the command.
@@ -24,7 +20,7 @@ func (c *commandContextValue) run(target *cobra.Command, args ...string) {
 }
 
 // CreateTypedCommand Creates a new typed command from the given handler instance.
-func CreateTypedCommand[T TypedCommand](instance T) *cobra.Command {
+func CreateTypedCommand[T types.TypedCommand](instance T) *cobra.Command {
 
 	reflector := reflection.NewCommandReflector[T]()
 	desc := reflector.ReflectCommandDescriptor(instance)

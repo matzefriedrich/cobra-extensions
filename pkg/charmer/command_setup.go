@@ -1,27 +1,24 @@
 package charmer
 
-import "github.com/spf13/cobra"
-
-type CommandsSetupFunc func(w CommandSetup)
-
-type CommandSetup interface {
-	AddCommand(c ...*cobra.Command) CommandSetup
-	AddGroupCommand(c *cobra.Command, setup CommandsSetupFunc) CommandSetup
-}
-
-var _ CommandSetup = &commandSetup{}
+import (
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
+	"github.com/spf13/cobra"
+)
 
 type commandSetup struct {
 	command *cobra.Command
 }
 
-func (w *commandSetup) AddCommand(c ...*cobra.Command) CommandSetup {
+var _ types.CommandSetup = &commandSetup{}
+
+// AddCommand adds one or more sub-commands to the current command.
+func (w *commandSetup) AddCommand(c ...*cobra.Command) types.CommandSetup {
 	w.command.AddCommand(c...)
 	return w
 }
 
-// AddGroupCommand Adds a sub-command to the specified *cobra.Command instance.
-func (w *commandSetup) AddGroupCommand(c *cobra.Command, setup CommandsSetupFunc) CommandSetup {
+// AddGroupCommand adds a sub-command to the current command and calls the setup function for additional configuration.
+func (w *commandSetup) AddGroupCommand(c *cobra.Command, setup types.CommandsSetupFunc) types.CommandSetup {
 	w.command.AddCommand(c)
 	if setup != nil {
 		wrapper := commandSetup{command: c}

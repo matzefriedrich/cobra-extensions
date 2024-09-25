@@ -2,31 +2,32 @@ package commands
 
 import (
 	"fmt"
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
+
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 
 	"github.com/spf13/cobra"
 )
 
-// helloCommand A command handler type for the hello command.
 type helloCommand struct {
-	use       abstractions.CommandName `flag:"hello"`
+	use       types.CommandName `flag:"hello" short:"Prints a greeting to the specified name."`
 	Arguments helloArgs
 }
 
-// helloArgs Stores values for positional arguments of the hello command.
+var _ types.TypedCommand = (*helloCommand)(nil)
+
 type helloArgs struct {
-	abstractions.CommandArgs
+	types.CommandArgs
 	Name string
 }
 
-// CreateHelloCommand Creates a new helloCommand instance.
 func CreateHelloCommand() *cobra.Command {
 	instance := &helloCommand{
 		Arguments: helloArgs{
-			CommandArgs: abstractions.NewCommandArgs(1),
+			CommandArgs: types.NewCommandArgs(types.MinimumArgumentsRequired(1)),
 		}}
-	return pkg.CreateTypedCommand(instance)
+	return commands.CreateTypedCommand(instance)
 }
 
 func (c *helloCommand) Execute() {

@@ -1,7 +1,11 @@
 package charmer
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
+	"github.com/spf13/cobra"
+)
 
+// CommandLineApplication Represents a command-line application using the Cobra library for command parsing.
 type CommandLineApplication struct {
 	root *cobra.Command
 }
@@ -24,16 +28,19 @@ func NewCommandLineApplication(name string, description string) *CommandLineAppl
 	}
 }
 
+// Execute executes the root command of the CommandLineApplication.
 func (a *CommandLineApplication) Execute() error {
 	return a.root.Execute()
 }
 
+// AddCommand Adds one or more commands to the root command of the CommandLineApplication.
 func (a *CommandLineApplication) AddCommand(c ...*cobra.Command) *CommandLineApplication {
 	a.root.AddCommand(c...)
 	return a
 }
 
-func (a *CommandLineApplication) AddGroupCommand(c *cobra.Command, setup CommandsSetupFunc) *CommandLineApplication {
+// AddGroupCommand Adds a sub-command to the root command and configures it using the provided setup function.
+func (a *CommandLineApplication) AddGroupCommand(c *cobra.Command, setup types.CommandsSetupFunc) *CommandLineApplication {
 	a.root.AddCommand(c)
 	if setup != nil {
 		wrapper := commandSetup{command: c}

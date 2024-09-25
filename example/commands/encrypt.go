@@ -1,25 +1,25 @@
 package commands
 
 import (
-	"github.com/matzefriedrich/cobra-extensions/pkg"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"os"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/spf13/cobra"
 )
 
-var _ abstractions.ExecutableCommand = &encryptMessageCommand{}
+var _ types.TypedCommand = &encryptMessageCommand{}
 
 type encryptMessageCommand struct {
 	cryptCommand
-	use     abstractions.CommandName `flag:"encrypt" short:"Encrypt a message." long:"Encrypt a message and protects it with a passphrase."`
-	Message string                   `flag:"message" usage:"The message to encrypt."`
+	use     types.CommandName `flag:"encrypt" short:"Encrypt a message." long:"Encrypt a message and protects it with a passphrase."`
+	Message string            `flag:"message" usage:"The message to encrypt."`
 }
 
 func CreateEncryptMessageCommand() *cobra.Command {
 	instance := &encryptMessageCommand{cryptCommand: cryptCommand{}}
-	return pkg.CreateTypedCommand(instance)
+	return commands.CreateTypedCommand(instance)
 }
 
 func (e *encryptMessageCommand) Execute() {

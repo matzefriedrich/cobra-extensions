@@ -1,10 +1,11 @@
-package internal
+package utils
 
 import (
 	"regexp"
 	"strings"
 )
 
+// ExtractCommandUse extracts the command use string from given command name by matching different naming conventions.
 func ExtractCommandUse(s string) string {
 
 	regexes := []*regexp.Regexp{
