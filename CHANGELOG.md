@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - cobra-extensions v0.3.0, 2024-09-26
+
+### Added
+
+* Introduced the `types` package to centralize command type definitions.
+
+### Changed
+
+* Updated import paths and references across the project to use the new `types` package.
+* Removed type definitions from the `commands` and `reflection` package; moved interface types to the new `types` package.
+* Upgraded Go SDK version from 1.21 to 1.23.
+
+
 ## [0.2.6] - cobra-extensions v0.2.6, 2024-08-27
 
 ### Added
