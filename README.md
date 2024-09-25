@@ -13,7 +13,11 @@ $ go get -u github.com/matzefriedrich/cobra-extensions@latest
 Next, include Cobra extensions in your application.
 
 ````go
-import "github.com/matzefriedrich/cobra-extensions/pkg"
+import (
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
+	"github.com/spf13/cobra"
+)
 ````
 
 ## Example
@@ -25,24 +29,35 @@ package commands
 
 import (
 	"fmt"
-
-	"github.com/matzefriedrich/cobra-extensions/pkg"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 )
 
 type helloCommand struct {
-	use  pkg.CommandName `flag:"hello"`
-	Name string          `flag:"name" usage:"Your name"`
+	use       types.CommandName `flag:"hello"`
+	Arguments helloArgs
+}
+
+var _ types.TypedCommand = (*helloCommand)(nil)
+
+type helloArgs struct {
+	types.CommandArgs
+	Name string
 }
 
 func CreateHelloCommand() *cobra.Command {
-	instance := &helloCommand{}
-	return pkg.CreateTypedCommand(instance)
+	instance := &helloCommand{
+		Arguments: helloArgs{
+			CommandArgs: types.NewCommandArgs(types.MinimumArgumentsRequired(1)),
+		}}
+	return commands.CreateTypedCommand(instance)
 }
 
 func (c *helloCommand) Execute() {
-	_ = fmt.Sprintf("Hello %s.", c.Name)
+	fmt.Printf("Hello %s.\n", c.Arguments.Name)
 }
+
 ````
 
 A `CreateHelloCommand` factory method creates a new `helloCommand` instance and utilizes the `CreateTypedCommand` method to create and initialize a Cobra command.
@@ -52,16 +67,19 @@ package main
 
 import (
 	"github.com/matzefriedrich/cobra-extensions/example/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/charmer"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 func main() {
 
-    app := &cobra.Command{}
+	app := charmer.NewRootCommand("simple-example", "")
 
-    app.AddCommand(commands.CreateHelloCommand())
-	
-    _ = app.Execute()
+	app.AddCommand(commands.CreateHelloCommand())
+
+	err := app.Execute()
+	if err != nil {
+		panic(err)
+	}
 }
 ````

@@ -52,7 +52,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 			flagName := field.Tag.Get("flag")
 
 			fieldType := field.Type
-			if fieldType == reflect.TypeOf(CommandName{}) {
+			if fieldType == reflect.TypeOf(types.CommandName{}) {
 				use = flagName
 				shortDescriptionText = field.Tag.Get("short")
 				longDescriptionText = field.Tag.Get("long")

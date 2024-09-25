@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
-	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"os"
 
@@ -14,8 +13,8 @@ var _ types.TypedCommand = &encryptMessageCommand{}
 
 type encryptMessageCommand struct {
 	cryptCommand
-	use     reflection.CommandName `flag:"encrypt" short:"Encrypt a message." long:"Encrypt a message and protects it with a passphrase."`
-	Message string                 `flag:"message" usage:"The message to encrypt."`
+	use     types.CommandName `flag:"encrypt" short:"Encrypt a message." long:"Encrypt a message and protects it with a passphrase."`
+	Message string            `flag:"message" usage:"The message to encrypt."`
 }
 
 func CreateEncryptMessageCommand() *cobra.Command {

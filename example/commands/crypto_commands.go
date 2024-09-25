@@ -2,18 +2,18 @@ package commands
 
 import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
-	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 )
 
 type cryptoCommand struct {
-	commands.BaseCommand
-	use reflection.CommandName `flag:"crypt"`
+	types.BaseCommand
+	use types.CommandName `flag:"crypt"`
 }
 
 func CreateCryptCommand() *cobra.Command {
 	instance := &cryptoCommand{
-		BaseCommand: commands.BaseCommand{},
+		BaseCommand: types.BaseCommand{},
 	}
 	return commands.CreateTypedCommand(instance)
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
-
 	"github.com/spf13/cobra"
 )
 

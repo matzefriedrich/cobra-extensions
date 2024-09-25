@@ -2,28 +2,26 @@ package commands
 
 import (
 	"fmt"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
-	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 
 	"github.com/spf13/cobra"
 )
 
-// helloCommand A command handler type for the hello command.
 type helloCommand struct {
-	use       reflection.CommandName `flag:"hello"`
+	use       types.CommandName `flag:"hello" short:"Prints a greeting to the specified name."`
 	Arguments helloArgs
 }
 
 var _ types.TypedCommand = (*helloCommand)(nil)
 
-// helloArgs Stores values for positional arguments of the hello command.
 type helloArgs struct {
 	types.CommandArgs
 	Name string
 }
 
-// CreateHelloCommand Creates a new helloCommand instance.
 func CreateHelloCommand() *cobra.Command {
 	instance := &helloCommand{
 		Arguments: helloArgs{

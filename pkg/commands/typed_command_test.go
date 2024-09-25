@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
@@ -10,8 +9,8 @@ import (
 )
 
 type testCommand1 struct {
-	name reflection.CommandName `flag:"test"`
-	P1   string                 `flag:"param1"`
+	name types.CommandName `flag:"test"`
+	P1   string            `flag:"param1"`
 }
 
 func (t *testCommand1) Execute() {
@@ -41,10 +40,10 @@ type logger struct {
 
 type testCommand2 struct {
 	testCommand1
-	name        reflection.CommandName `flag:"test"`
-	P2          int64                  `flag:"param2"`
-	P3          int                    `flag:"p3"`
-	BooleanFlag bool                   `flag:"b"`
+	name        types.CommandName `flag:"test"`
+	P2          int64             `flag:"param2"`
+	P3          int               `flag:"p3"`
+	BooleanFlag bool              `flag:"b"`
 	logger      logger
 }
 
@@ -98,7 +97,7 @@ func Test_CreateTypedCommand_with_base_template_default_values(t *testing.T) {
 }
 
 type testCommandWithPositionalArgs struct {
-	use       reflection.CommandName `flag:"test3"`
+	use       types.CommandName `flag:"test3"`
 	Arguments testCommandArgs
 }
 

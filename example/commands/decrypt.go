@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
-	"github.com/matzefriedrich/cobra-extensions/pkg/reflection"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"io"
 	"os"
@@ -15,7 +14,7 @@ var _ types.TypedCommand = &decryptMessageCommand{}
 
 type decryptMessageCommand struct {
 	cryptCommand
-	use reflection.CommandName `flag:"decrypt" short:"Decrypt a message." long:"Reads an armored message from stdin and decrypts it."`
+	use types.CommandName `flag:"decrypt" short:"Decrypt a message." long:"Reads an armored message from stdin and decrypts it."`
 }
 
 func CreateDecryptMessageCommand() *cobra.Command {

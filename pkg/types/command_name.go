@@ -1,4 +1,4 @@
-package reflection
+package types
 
 // CommandName represents the name of a command in the system.
 type CommandName struct {
