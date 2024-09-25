@@ -7,7 +7,10 @@
 
 # cobra-extensions
 
-**An extension library for Cobra**, adding a declarative approach to simplify the configuration of commands and flags.
+**cobra-extensions** is an extension package for the well-known [Cobra](https://github.com/spf13/cobra) library, designed to enhance command management by introducing a declarative approach for binding flags to command structs. With this approach, you build complex CLI applications consisting of many commands in a clean and organized manner.
+
+By leveraging command structs, adopting patterns like dependency injection becomes far easier, further simplifying the design of scalable and maintainable CLI tools. The library automates flag setup using struct tags, reducing boilerplate and improving developer productivity.
+
 
 ## Usage
 
