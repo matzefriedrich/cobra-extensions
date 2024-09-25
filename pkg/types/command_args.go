@@ -1,4 +1,4 @@
-package abstractions
+package types
 
 // CommandArgs stores argument options for a command.
 type CommandArgs struct {

@@ -1,22 +1,22 @@
 package reflection
 
 import (
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"reflect"
 
 	"github.com/matzefriedrich/cobra-extensions/internal"
-	"github.com/matzefriedrich/cobra-extensions/pkg/abstractions"
 )
 
 type commandReflector[T any] struct {
 }
 
 // NewCommandReflector Creates a new CommandReflector instance.
-func NewCommandReflector[T any]() CommandReflector[T] {
+func NewCommandReflector[T any]() types.CommandReflector[T] {
 	return &commandReflector[T]{}
 }
 
 // ReflectCommandDescriptor Reflects all metadata from a command handler and returns a new CommandDescriptor instance.
-func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
+func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescriptor {
 
 	var flags = make([]FlagDescriptor, 0)
 	arguments := NewArgumentsDescriptorWith()
@@ -52,7 +52,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 			flagName := field.Tag.Get("flag")
 
 			fieldType := field.Type
-			if fieldType == reflect.TypeOf(abstractions.CommandName{}) {
+			if fieldType == reflect.TypeOf(CommandName{}) {
 				use = flagName
 				shortDescriptionText = field.Tag.Get("short")
 				longDescriptionText = field.Tag.Get("long")
@@ -86,7 +86,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) CommandDescriptor {
 	return NewCommandDescriptor(use, shortDescriptionText, longDescriptionText, flags, arguments)
 }
 
-func tryReflectArgumentsDescriptor(m ReflectedObject, target ArgumentsDescriptor) bool {
+func tryReflectArgumentsDescriptor(m ReflectedObject, target types.ArgumentsDescriptor) bool {
 
 	hasCommandArgs := false
 
@@ -104,8 +104,8 @@ func tryReflectArgumentsDescriptor(m ReflectedObject, target ArgumentsDescriptor
 			}
 		case reflect.Interface:
 		case reflect.Struct:
-			if field.isType(abstractions.CommandArgs{}) {
-				compatible, ok := field.getInterfaceValue().(abstractions.CommandArgs)
+			if field.isType(types.CommandArgs{}) {
+				compatible, ok := field.getInterfaceValue().(types.CommandArgs)
 				if ok {
 					target.With(MinimumArgs(compatible.MinimumArgs))
 					hasCommandArgs = true

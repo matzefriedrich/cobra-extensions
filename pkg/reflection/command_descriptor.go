@@ -3,26 +3,32 @@ package reflection
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 	"reflect"
 )
 
-type CommandDescriptor struct {
+// CommandDescriptor represents the metadata and configuration for a command, including its use, descriptions, flags, and arguments.
+type commandDescriptor struct {
 	key       string
 	use       string
 	short     string
 	long      string
 	flags     []FlagDescriptor
-	arguments ArgumentsDescriptor
+	arguments types.ArgumentsDescriptor
 }
 
-func (d *CommandDescriptor) Key() string {
+var _ types.CommandDescriptor = (*commandDescriptor)(nil)
+
+// Key returns the key string associated with the CommandDescriptor.
+func (d *commandDescriptor) Key() string {
 	return d.key
 }
 
-func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments ArgumentsDescriptor) CommandDescriptor {
+// NewCommandDescriptor creates a new CommandDescriptor with specified use, short and long descriptions, flags and arguments.
+func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments types.ArgumentsDescriptor) types.CommandDescriptor {
 	key := makeCommandKey(use)
-	return CommandDescriptor{
+	return &commandDescriptor{
 		key:       key,
 		use:       use,
 		short:     short,
@@ -40,7 +46,7 @@ func makeCommandKey(use string) string {
 }
 
 // BindFlags Binds the reflected flags configuration to the given *cobra.Command object.
-func (d *CommandDescriptor) BindFlags(target *cobra.Command) {
+func (d *commandDescriptor) BindFlags(target *cobra.Command) {
 	if target == nil {
 		return
 	}
@@ -60,7 +66,7 @@ func (d *CommandDescriptor) BindFlags(target *cobra.Command) {
 }
 
 // BindArguments Binds the reflected arguments configuration to the given *cobra.Command object.
-func (d *CommandDescriptor) BindArguments(target *cobra.Command) {
+func (d *commandDescriptor) BindArguments(target *cobra.Command) {
 	if target == nil {
 		return
 	}
@@ -72,11 +78,13 @@ func (d *CommandDescriptor) BindArguments(target *cobra.Command) {
 	d.arguments.BindArguments(target)
 }
 
-func (d *CommandDescriptor) UnmarshalArgumentValues(args ...string) {
+// UnmarshalArgumentValues deserializes the command argument values from a list of strings and binds them to the corresponding fields.
+func (d *commandDescriptor) UnmarshalArgumentValues(args ...string) {
 	d.arguments.BindArgumentValues(args...)
 }
 
-func (d *CommandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
+// UnmarshalFlagValues populates the CommandDescriptor's flags from the provided *cobra.Command object.
+func (d *commandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
 	flags := target.Flags()
 	for _, f := range d.flags {
 		flagName := f.name

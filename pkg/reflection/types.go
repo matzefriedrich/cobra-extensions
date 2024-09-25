@@ -1,10 +1,8 @@
 package reflection
 
-import "reflect"
-
-type CommandReflector[T any] interface {
-	ReflectCommandDescriptor(n T) CommandDescriptor
-}
+import (
+	"reflect"
+)
 
 type valueItem struct {
 	value     reflect.Value
