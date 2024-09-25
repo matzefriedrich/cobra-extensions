@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Updated import paths and references across the project to use the new `types` package.
-* Removed type definitions from the `commands` and `reflection` package; moved interface types to the new `types` package.
+* Removed type definitions from the `commands` and `reflection` packages; moved interface types to the new `types` package.
+* The `reflection` package is now internal because it supports the functionality of the extensions package and is not intended for use by user code.
 * Upgraded Go SDK version from 1.21 to 1.23.
 
 

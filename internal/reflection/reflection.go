@@ -1,10 +1,9 @@
 package reflection
 
 import (
+	"github.com/matzefriedrich/cobra-extensions/internal/utils"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"reflect"
-
-	"github.com/matzefriedrich/cobra-extensions/internal"
 )
 
 type commandReflector[T any] struct {
@@ -28,11 +27,11 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 
 	valueType := reflect.TypeOf(value.Interface())
 	valueTypeName := valueType.Name()
-	use := internal.ExtractCommandUse(valueTypeName)
+	use := utils.ExtractCommandUse(valueTypeName)
 	shortDescriptionText := ""
 	longDescriptionText := ""
 
-	stack := internal.MakeStack[valueItem]()
+	stack := utils.MakeStack[valueItem]()
 	stack.Push(valueItem{value: value, valueType: valueType})
 
 	for {
