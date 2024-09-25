@@ -24,7 +24,7 @@ type helloArgs struct {
 func CreateHelloCommand() *cobra.Command {
 	instance := &helloCommand{
 		Arguments: helloArgs{
-			CommandArgs: abstractions.NewCommandArgs(1),
+			CommandArgs: abstractions.NewCommandArgs(abstractions.MinimumArgumentsRequired(1)),
 		}}
 	return pkg.CreateTypedCommand(instance)
 }
