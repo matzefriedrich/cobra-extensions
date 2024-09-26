@@ -1,4 +1,5 @@
 [![CI](https://github.com/matzefriedrich/cobra-extensions/actions/workflows/go.yml/badge.svg)](https://github.com/matzefriedrich/cobra-extensions/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/matzefriedrich/cobra-extensions/badge.svg)](https://coveralls.io/github/matzefriedrich/cobra-extensions)
 [![Go Reference](https://pkg.go.dev/badge/github.com/matzefriedrich/cobra-extensions.svg)](https://pkg.go.dev/github.com/matzefriedrich/cobra-extensions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/matzefriedrich/cobra-extensions)](https://goreportcard.com/report/github.com/matzefriedrich/cobra-extensions)
 ![License](https://img.shields.io/github/license/matzefriedrich/cobra-extensions)

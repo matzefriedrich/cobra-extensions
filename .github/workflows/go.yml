@@ -23,4 +23,11 @@ jobs:
 
     - name: Run tests with coverage
       run: go test -v -race -covermode atomic -coverprofile=covprofile -coverpkg ./... ./...
-  
+
+    - name: Install goveralls
+      run: go install github.com/mattn/goveralls@latest
+
+    - name: Send coverage report
+      env:
+        COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: goveralls -coverprofile=covprofile -service=github

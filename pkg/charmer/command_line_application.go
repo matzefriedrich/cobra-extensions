@@ -43,8 +43,8 @@ func (a *CommandLineApplication) AddCommand(c ...*cobra.Command) *CommandLineApp
 func (a *CommandLineApplication) AddGroupCommand(c *cobra.Command, setup types.CommandsSetupFunc) *CommandLineApplication {
 	a.root.AddCommand(c)
 	if setup != nil {
-		wrapper := commandSetup{command: c}
-		setup(&wrapper)
+		wrapper := newCommandSetup(c)
+		setup(wrapper)
 	}
 	return a
 }

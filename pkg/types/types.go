@@ -35,7 +35,7 @@ type TypedCommand interface {
 }
 
 // CommandsSetupFunc defines a function type used to set up commands within a CommandSetup context.
-type CommandsSetupFunc func(w CommandSetup)
+type CommandsSetupFunc func(setup CommandSetup)
 
 // CommandSetup provides methods to add and organize commands within a command-line application interface.
 type CommandSetup interface {
