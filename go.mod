@@ -5,7 +5,7 @@ go 1.23
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5
 	github.com/google/uuid v1.6.0
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 )
 
