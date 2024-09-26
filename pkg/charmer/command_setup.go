@@ -11,6 +11,11 @@ type commandSetup struct {
 
 var _ types.CommandSetup = &commandSetup{}
 
+// newCommandSetup initializes a new commandSetup instance with the provided Cobra command object.
+func newCommandSetup(command *cobra.Command) *commandSetup {
+	return &commandSetup{command: command}
+}
+
 // AddCommand adds one or more sub-commands to the current command.
 func (w *commandSetup) AddCommand(c ...*cobra.Command) types.CommandSetup {
 	w.command.AddCommand(c...)
