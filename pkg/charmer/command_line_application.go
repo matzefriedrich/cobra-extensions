@@ -1,7 +1,7 @@
 package charmer
 
 import (
-	"github.com/matzefriedrich/cobra-extensions/internal/commands"
+	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 )

@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/matzefriedrich/cobra-extensions/internal/utils"
-	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
@@ -70,5 +69,5 @@ func NewMarkdownDocsCommand(root *cobra.Command) *cobra.Command {
 	instance := &markdownDocsCommand{
 		root: root,
 	}
-	return commands.CreateTypedCommand(instance)
+	return CreateTypedCommand(instance)
 }
