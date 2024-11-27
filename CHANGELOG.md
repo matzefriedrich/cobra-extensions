@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - cobra-extensions v0.4.0, 2024-11-27
+
+### Added
+
+* Introduced the `NewMarkdownCommand` method to create a `cobra.Command` instance for generating Markdown documentation. This command can be linked to the root command and produces documentation for all registered commands and subcommands in Markdown format.
+
+### Changed
+
+* Enhanced the `CreateTypedCommand` function to support options, enabling greater flexibility in command creation and configuration. This update allows group commands to be marked as non-runnable, influencing their representation in Markdown documentation. To achieve this, pass the `NonRunnable` option to the `CreateTypedCommand` function.
+
+* Improved and expanded descriptions for example command groups and applications to enhance clarity and usability.
+
+
 ## [0.3.3] - cobra-extensions v0.3.3, 2024-11-27
 
 ### Changed

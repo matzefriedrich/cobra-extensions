@@ -10,7 +10,7 @@ import (
 func main() {
 
 	err :=
-		charmer.NewCommandLineApplication("charmer-example", "").
+		charmer.NewCommandLineApplication("charmer-example", "A sample application to showcase the charmer package.").
 			AddCommand(commands.CreateHelloCommand()).
 			AddGroupCommand(commands.CreateCryptCommand(), func(crypto types.CommandSetup) {
 				crypto.AddCommand(
