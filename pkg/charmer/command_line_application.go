@@ -1,6 +1,7 @@
 package charmer
 
 import (
+	"github.com/matzefriedrich/cobra-extensions/internal/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 )
@@ -23,9 +24,12 @@ func NewRootCommand(name string, description string) *cobra.Command {
 
 // NewCommandLineApplication Creates a new CommandLineApplication instance.
 func NewCommandLineApplication(name string, description string) *CommandLineApplication {
-	return &CommandLineApplication{
-		root: NewRootCommand(name, description),
+	rootCommand := NewRootCommand(name, description)
+	app := &CommandLineApplication{
+		root: rootCommand,
 	}
+	app.AddCommand(commands.NewMarkdownDocsCommand(rootCommand))
+	return app
 }
 
 // Execute executes the root command of the CommandLineApplication.
@@ -42,9 +46,17 @@ func (a *CommandLineApplication) AddCommand(c ...*cobra.Command) *CommandLineApp
 // AddGroupCommand Adds a sub-command to the root command and configures it using the provided setup function.
 func (a *CommandLineApplication) AddGroupCommand(c *cobra.Command, setup types.CommandsSetupFunc) *CommandLineApplication {
 	a.root.AddCommand(c)
+
+	makeNonRunnable(c)
+
 	if setup != nil {
 		wrapper := newCommandSetup(c)
 		setup(wrapper)
 	}
 	return a
+}
+
+func makeNonRunnable(c *cobra.Command) {
+	c.Run = nil
+	c.RunE = nil
 }
