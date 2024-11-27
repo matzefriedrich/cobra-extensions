@@ -16,5 +16,5 @@ func CreateCryptCommand() *cobra.Command {
 	instance := &cryptoCommand{
 		BaseCommand: types.BaseCommand{},
 	}
-	return commands.CreateTypedCommand(instance)
+	return commands.CreateTypedCommand(instance, commands.NonRunnable)
 }

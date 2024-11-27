@@ -22,7 +22,7 @@ func (c *commandContextValue) run(target *cobra.Command, args ...string) {
 }
 
 // CreateTypedCommand Creates a new typed command from the given handler instance.
-func CreateTypedCommand[T types.TypedCommand](instance T, options ...CommandOption) *cobra.Command {
+func CreateTypedCommand[T types.TypedCommand](instance T, options ...func() CommandOption) *cobra.Command {
 
 	reflector := reflection.NewCommandReflector[T]()
 	desc := reflector.ReflectCommandDescriptor(instance)
@@ -38,7 +38,8 @@ func CreateTypedCommand[T types.TypedCommand](instance T, options ...CommandOpti
 	}
 
 	for _, option := range options {
-		option(cmd)
+		f := option()
+		f(cmd)
 	}
 
 	desc.BindArguments(cmd)
@@ -53,4 +54,12 @@ func CreateTypedCommand[T types.TypedCommand](instance T, options ...CommandOpti
 	cmd.SetContext(ctx)
 
 	return cmd
+}
+
+// NonRunnable disables the Run and RunE functions of a Cobra command, effectively making the command non-runnable.
+func NonRunnable() CommandOption {
+	return func(c *cobra.Command) {
+		c.Run = nil
+		c.RunE = nil
+	}
 }

@@ -47,16 +47,9 @@ func (a *CommandLineApplication) AddCommand(c ...*cobra.Command) *CommandLineApp
 func (a *CommandLineApplication) AddGroupCommand(c *cobra.Command, setup types.CommandsSetupFunc) *CommandLineApplication {
 	a.root.AddCommand(c)
 
-	makeNonRunnable(c)
-
 	if setup != nil {
 		wrapper := newCommandSetup(c)
 		setup(wrapper)
 	}
 	return a
-}
-
-func makeNonRunnable(c *cobra.Command) {
-	c.Run = nil
-	c.RunE = nil
 }
