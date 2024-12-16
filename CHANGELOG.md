@@ -5,18 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - cobra-extensions v0.4.1, 2024-12-16
+
+### Changed
+
+* Bumps `golang.org/x/crypto` from 0.17.0 to 0.31.0 [#14](https://github.com/matzefriedrich/cobra-extensions/pull/14)
+
+
 ## [0.4.1] - cobra-extensions v0.4.1, 2024-12-03
 
 ### Changed
 
-* Automated dependency version bump
+* Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.8.0 to 2.8.1 [#13](https://github.com/matzefriedrich/cobra-extensions/pull/13)
 
 
 ## [0.4.0] - cobra-extensions v0.4.0, 2024-11-27
 
 ### Added
 
-* Introduced the `NewMarkdownCommand` method to create a `cobra.Command` instance for generating Markdown documentation. This command can be linked to the root command and produces documentation for all registered commands and subcommands in Markdown format.
+* Introduced the `NewMarkdownCommand` method to create a `cobra.Command` instance for generating Markdown documentation. This command can be linked to the root command and produces documentation for all registered commands and subcommands in Markdown format. [#12](https://github.com/matzefriedrich/cobra-extensions/pull/12)
 
 ### Changed
 
@@ -29,21 +36,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Automated dependency version bump
+* Bumps `github.com/stretchr/testify` from 1.9.0 to 1.10.0 [#11](https://github.com/matzefriedrich/cobra-extensions/pull/11)
 
 
 ## [0.3.2] - cobra-extensions v0.3.2, 2024-11-12
 
 ### Changed
 
-* Automated dependency version bump
+* Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.7.5 to 2.8.0 [#10](https://github.com/matzefriedrich/cobra-extensions/pull/10)
 
 
 ## [0.3.1] - cobra-extensions v0.3.1, 2024-09-26
 
 ### Added
 
-* Added tests and increases coverage
+* Added tests and increases coverage [#9](https://github.com/matzefriedrich/cobra-extensions/pull/9)
 
 ### Changed
 
