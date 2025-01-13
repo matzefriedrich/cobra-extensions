@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.2] - cobra-extensions v0.4.1, 2024-12-16
+## [0.4.3] - cobra-extensions v0.4.3, 2025-01-13
+
+### Changed
+
+* Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.8.1 to 2.8.2 [#15](https://github.com/matzefriedrich/cobra-extensions/pull/15)
+
+
+## [0.4.2] - cobra-extensions v0.4.2, 2024-12-16
 
 ### Changed
 
