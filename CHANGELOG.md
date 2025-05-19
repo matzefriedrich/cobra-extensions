@@ -5,18 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.6] - cobra-extensions v0.4.6, 2025-05-19
+
+### Changed
+
+* Bumps `golang.org/x/crypto` from 0.31.0 to 0.35.0 [#18](https://github.com/matzefriedrich/cobra-extensions/pull/18)
+
+
 ## [0.4.5] - cobra-extensions v0.4.5, 2025-03-06
 
 ### Changed
 
-* Bumps github.com/ProtonMail/gopenpgp/v2 from 2.8.2 to 2.8.3 [#17](https://github.com/matzefriedrich/cobra-extensions/pull/17)
+* Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.8.2 to 2.8.3 [#17](https://github.com/matzefriedrich/cobra-extensions/pull/17)
 
 
 ## [0.4.4] - cobra-extensions v0.4.4, 2025-02-19
 
 ### Changed
 
-* Bumps github.com/spf13/cobra from 1.8.1 to 1.9.1 [#16](https://github.com/matzefriedrich/cobra-extensions/pull/16)
+* Bumps `github.com/spf13/cobra` from 1.8.1 to 1.9.1 [#16](https://github.com/matzefriedrich/cobra-extensions/pull/16)
 
 
 ## [0.4.3] - cobra-extensions v0.4.3, 2025-01-13
