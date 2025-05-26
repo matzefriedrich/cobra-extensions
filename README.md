@@ -18,7 +18,7 @@ By leveraging command structs, adopting patterns like dependency injection becom
 Using the Cobra extensions is a no-brainer. Use, `go get` to install the latest version of the library.
 
 ````bash
-$ go get -u github.com/matzefriedrich/cobra-extensions@latest
+go get -u github.com/matzefriedrich/cobra-extensions@latest
 ````
 
 Next, include Cobra extensions in your application.
