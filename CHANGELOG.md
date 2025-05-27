@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - cobra-extensions v0.5.1, 2025-05-27
+
+### Changed
+
+* Removes the `google/uuid` package dependency and replaces it with a custom thread-safe unique identifier generator (a simple incrementing sequence generator (`UidSequence`) that uses a mutex lock to ensure thread safety). So, instead of using UUID strings for command keys, the code now uses sequential numeric identifiers.
+
+
 ## [0.5.0] - cobra-extensions v0.5.0, 2025-05-26
 
 ### Changed
