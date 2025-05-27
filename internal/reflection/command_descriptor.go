@@ -2,10 +2,11 @@ package reflection
 
 import (
 	"fmt"
-	"github.com/google/uuid"
+	"reflect"
+	"strconv"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
-	"reflect"
 )
 
 // CommandDescriptor represents the metadata and configuration for a command, including its use, descriptions, flags, and arguments.
@@ -25,7 +26,7 @@ func (d *commandDescriptor) Key() string {
 	return d.key
 }
 
-// NewCommandDescriptor creates a new CommandDescriptor with specified use, short and long descriptions, flags and arguments.
+// NewCommandDescriptor creates a new CommandDescriptor with specified use, short and long descriptions, flags, and arguments.
 func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments types.ArgumentsDescriptor) types.CommandDescriptor {
 	key := makeCommandKey(use)
 	return &commandDescriptor{
@@ -39,8 +40,8 @@ func NewCommandDescriptor(use string, short string, long string, flags []FlagDes
 }
 
 func makeCommandKey(use string) string {
-	id := uuid.New()
-	idString := id.String()[0:8]
+	id := globalUidSequence.Next()
+	idString := strconv.FormatUint(id, 10)
 	key := fmt.Sprintf("%s-%s", use, idString)
 	return key
 }
