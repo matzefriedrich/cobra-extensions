@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.3] - cobra-extensions v0.5.3, 2025-09-09
 
 * Bumps `github.com/spf13/cobra` from 1.9.1 to 1.10.1 [#22](https://github.com/matzefriedrich/cobra-extensions/pull/22)
+* Bumps `github.com/stretchr/testify` from 1.11.0 to 1.11.1 [#23](https://github.com/matzefriedrich/cobra-extensions/pull/23)
 
 
 ## [0.5.2] - cobra-extensions v0.5.2, 2025-09-05
