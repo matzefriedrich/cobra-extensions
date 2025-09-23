@@ -1,11 +1,12 @@
 package commands
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_MarkdownCommand_Execute_renders_multiple_files_if_folder_path_specified(t *testing.T) {
@@ -18,7 +19,7 @@ func Test_MarkdownCommand_Execute_renders_multiple_files_if_folder_path_specifie
 	app.SetArgs([]string{"markdown", "--output", os.TempDir()})
 
 	// Act
-	err := app.Execute()
+	err := app.ExecuteContext(t.Context())
 
 	// Assert
 	assert.NoError(t, err)

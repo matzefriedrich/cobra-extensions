@@ -1,9 +1,7 @@
 package reflection
 
 import (
-	"fmt"
 	"reflect"
-	"strconv"
 
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
@@ -11,7 +9,6 @@ import (
 
 // CommandDescriptor represents the metadata and configuration for a command, including its use, descriptions, flags, and arguments.
 type commandDescriptor struct {
-	key       string
 	use       string
 	short     string
 	long      string
@@ -21,29 +18,15 @@ type commandDescriptor struct {
 
 var _ types.CommandDescriptor = (*commandDescriptor)(nil)
 
-// Key returns the key string associated with the CommandDescriptor.
-func (d *commandDescriptor) Key() string {
-	return d.key
-}
-
 // NewCommandDescriptor creates a new CommandDescriptor with specified use, short and long descriptions, flags, and arguments.
 func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments types.ArgumentsDescriptor) types.CommandDescriptor {
-	key := makeCommandKey(use)
 	return &commandDescriptor{
-		key:       key,
 		use:       use,
 		short:     short,
 		long:      long,
 		flags:     flags,
 		arguments: arguments,
 	}
-}
-
-func makeCommandKey(use string) string {
-	id := globalUidSequence.Next()
-	idString := strconv.FormatUint(id, 10)
-	key := fmt.Sprintf("%s-%s", use, idString)
-	return key
 }
 
 // BindFlags Binds the reflected flags configuration to the given *cobra.Command object.
