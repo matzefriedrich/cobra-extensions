@@ -1,13 +1,15 @@
 package commands
 
 import (
+	"context"
+	"log"
+	"os"
+	"path/filepath"
+
 	"github.com/matzefriedrich/cobra-extensions/internal/utils"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
-	"log"
-	"os"
-	"path/filepath"
 )
 
 type markdownDocsCommand struct {
@@ -16,7 +18,7 @@ type markdownDocsCommand struct {
 	root             *cobra.Command
 }
 
-func (m *markdownDocsCommand) Execute() {
+func (m *markdownDocsCommand) Execute(_ context.Context) {
 
 	outputPath, _ := filepath.Abs(m.OutputFolderPath)
 

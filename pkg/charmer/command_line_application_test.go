@@ -1,12 +1,52 @@
 package charmer
 
 import (
+	"context"
+	"testing"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
+
+func Test_CommandLineApplication_NewRootCommand(t *testing.T) {
+
+	// Arrange
+	const invalidRootCommandName = ""
+
+	actExpectPanic := func(act func()) (panicked bool) {
+		defer func() {
+			if r := recover(); r != nil {
+				panicked = true
+			}
+		}()
+		act()
+		return false
+	}
+
+	// Act
+	act := func() { _ = NewRootCommand(invalidRootCommandName, "") }
+	result := make(chan bool, 1)
+	go func() {
+		result <- actExpectPanic(act)
+	}()
+
+	// Assert
+	assert.True(t, <-result, "expected panic in goroutine creating root command")
+}
+
+func Test_CommandLineApplication_Execute_without_context_without_any_command_does_not_return_error(t *testing.T) {
+
+	// Arrange
+	sut := NewCommandLineApplication("test-app", "")
+
+	// Act
+	err := sut.Execute(nil)
+
+	// Assert
+	assert.NoError(t, err)
+}
 
 func Test_CommandLineApplication_Execute_without_any_command_does_not_return_error(t *testing.T) {
 
@@ -14,7 +54,7 @@ func Test_CommandLineApplication_Execute_without_any_command_does_not_return_err
 	sut := NewCommandLineApplication("test-app", "")
 
 	// Act
-	err := sut.Execute()
+	err := sut.Execute(t.Context())
 
 	// Assert
 	assert.NoError(t, err)
@@ -34,17 +74,17 @@ func Test_CommandLineApplication_Execute_smoke_test(t *testing.T) {
 	application.root.SetArgs([]string{"group", "test"})
 
 	// Act
-	err := application.Execute()
+	err := application.Execute(t.Context())
 
 	// Assert
 	assert.NoError(t, err)
 	assert.True(t, command.Executed())
 }
 
-type executeFunc func()
+type executeFunc func(_ context.Context)
 
 func noop() executeFunc {
-	return func() {}
+	return func(context.Context) {}
 }
 
 type testCommand struct {
@@ -58,9 +98,9 @@ func (t *testCommand) Executed() bool {
 	return t.executed
 }
 
-func (t *testCommand) Execute() {
+func (t *testCommand) Execute(ctx context.Context) {
 	t.executed = true
-	t.executeFunc()
+	t.executeFunc(ctx)
 }
 
 var _ types.TypedCommand = (*testCommand)(nil)

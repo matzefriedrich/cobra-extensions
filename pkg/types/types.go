@@ -1,13 +1,14 @@
 package types
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 )
 
 type CommandDescriptor interface {
 	UnmarshalFlagValues(target *cobra.Command)
 	UnmarshalArgumentValues(args ...string)
-	Key() string
 	BindArguments(cmd *cobra.Command)
 	BindFlags(cmd *cobra.Command)
 }
@@ -31,7 +32,7 @@ type ArgumentsDescriptor interface {
 type TypedCommand interface {
 
 	// Execute runs the command, performing its specific action based on the implementation.
-	Execute()
+	Execute(ctx context.Context)
 }
 
 // CommandsSetupFunc defines a function type used to set up commands within a CommandSetup context.

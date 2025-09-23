@@ -1,6 +1,8 @@
 package charmer
 
 import (
+	"context"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/commands"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
@@ -33,8 +35,12 @@ func NewCommandLineApplication(name string, description string) *CommandLineAppl
 }
 
 // Execute executes the root command of the CommandLineApplication.
-func (a *CommandLineApplication) Execute() error {
-	return a.root.Execute()
+func (a *CommandLineApplication) Execute(ctx context.Context) error {
+	if ctx == nil {
+		return a.root.Execute()
+	} else {
+		return a.root.ExecuteContext(ctx)
+	}
 }
 
 // AddCommand Adds one or more commands to the root command of the CommandLineApplication.

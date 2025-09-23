@@ -1,11 +1,13 @@
 package commands
 
 import (
+	"context"
+	"io"
+	"testing"
+
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"testing"
 )
 
 type testCommand1 struct {
@@ -13,7 +15,7 @@ type testCommand1 struct {
 	P1   string            `flag:"param1"`
 }
 
-func (t *testCommand1) Execute() {
+func (t *testCommand1) Execute(_ context.Context) {
 }
 
 func Test_CreateTypedCommand(t *testing.T) {
@@ -27,7 +29,7 @@ func Test_CreateTypedCommand(t *testing.T) {
 	app.AddCommand(cmd)
 
 	// Act
-	_ = app.Execute()
+	_ = app.ExecuteContext(t.Context())
 
 	// Assert
 	assert.Equal(t, "Hello World", instance.P1)
@@ -58,7 +60,7 @@ func Test_CreateTypedCommand_with_base_template(t *testing.T) {
 	app.AddCommand(cmd)
 
 	// Act
-	_ = app.Execute()
+	_ = app.ExecuteContext(t.Context())
 
 	// Assert
 	assert.Equal(t, "Hello World", instance.P1)
@@ -87,7 +89,7 @@ func Test_CreateTypedCommand_with_base_template_default_values(t *testing.T) {
 	app.AddCommand(cmd)
 
 	// Act
-	_ = app.Execute()
+	_ = app.ExecuteContext(t.Context())
 
 	// Assert
 	assert.Equal(t, expectedP1, instance.P1)
@@ -108,7 +110,7 @@ type testCommandArgs struct {
 	BooleanArgument bool
 }
 
-func (t *testCommandWithPositionalArgs) Execute() {
+func (t *testCommandWithPositionalArgs) Execute(_ context.Context) {
 
 }
 
@@ -126,7 +128,7 @@ func Test_CreateTypedCommand_with_positional_args(t *testing.T) {
 	app.AddCommand(cmd)
 
 	// Act
-	_ = app.Execute()
+	_ = app.ExecuteContext(t.Context())
 
 	// Assert
 	arguments := instance.Arguments
@@ -134,4 +136,45 @@ func Test_CreateTypedCommand_with_positional_args(t *testing.T) {
 	assert.Equal(t, "Hello", arguments.TextArgument)
 	assert.Equal(t, int64(5), arguments.NumericArgument)
 	assert.Equal(t, true, arguments.BooleanArgument)
+}
+
+func Test_NonRunnable_unsets_Run_and_RunE_fields(t *testing.T) {
+	// Arrange
+	sut := NonRunnable()
+	target := &cobra.Command{}
+
+	// Act
+	sut(target)
+
+	// Assert
+	assert.Nilf(t, target.Run, "Command should not have a Run function")
+	assert.Nilf(t, target.RunE, "Command should not have a RunE function")
+}
+
+type disabledCommand struct {
+	execute func()
+}
+
+func (d *disabledCommand) Execute(_ context.Context) {
+	d.execute()
+}
+
+var _ types.TypedCommand = (*disabledCommand)(nil)
+
+func Test_CreateTypedCommand_with_NonRunnable_disables_the_Execute_handler(t *testing.T) {
+	// Arrange
+	executed := false
+	instance := &disabledCommand{
+		execute: func() {
+			executed = true
+		},
+	}
+	sut := CreateTypedCommand(instance, NonRunnable)
+
+	// Act
+	sut.ExecuteContext(t.Context())
+
+	// Assert
+	assert.NotNil(t, sut)
+	assert.False(t, executed)
 }

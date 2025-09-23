@@ -7,7 +7,7 @@ func Test_BaseCommand_Execute(t *testing.T) {
 	sut := BaseCommand{}
 
 	// Act
-	sut.Execute()
+	sut.Execute(t.Context())
 
 	// Assert
 
