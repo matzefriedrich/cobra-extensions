@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - cobra-extensions v0.6.0, 2025-09-24
+
+### Added
+
+* **Breaking changes:** Context-aware command execution: `TypedCommand.Execute` now accepts `context.Context`; `TypedCommand` implementations must be altered after upgrading to the latest version; call-sites are not affected.
+* Clean context handling within `CreateTypedCommand` (no external key/context plumbing).
+
+### Changed
+
+* `CommandLineApplication.Execute` now supports an optional context and calls `ExecuteContext`; if not provided, `Execute` is called instead.
+* All command implementations and call sites have been updated to pass and handle context.
+* The command execution flow is simplified to construct and execute handlers directly in the Cobra Run closure.
+
+### Removed
+
+* The `CommandDescriptor` key generation and usage (command key no longer needed).
+
+
 ## [0.5.3] - cobra-extensions v0.5.3, 2025-09-09
 
 * Bumps `github.com/spf13/cobra` from 1.9.1 to 1.10.1 [#22](https://github.com/matzefriedrich/cobra-extensions/pull/22)
