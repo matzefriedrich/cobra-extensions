@@ -57,7 +57,7 @@ type greetCommand struct {
     Name string            `flag:"name" short:"The name to greet." default:"World"`
 }
 
-func (g *greetCommand) Execute() {
+func (g *greetCommand) Execute(_ context.Context) {
     fmt.Printf("Hello, %s!\n", g.Name)
 }
 
