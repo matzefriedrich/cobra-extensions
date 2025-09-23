@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `CommandLineApplication.Execute` now supports an optional context and calls `ExecuteContext`; if not provided, `Execute` is called instead.
 * All command implementations and call sites have been updated to pass and handle context.
 * The command execution flow is simplified to construct and execute handlers directly in the Cobra Run closure.
+* Bumps `github.com/spf13/pflag` from 1.0.9 to 1.0.10
 
 ### Removed
 
