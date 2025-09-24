@@ -125,3 +125,38 @@ func newTestGroupCommand() *cobra.Command {
 	command := &testGroupCommand{BaseCommand: types.BaseCommand{}}
 	return commands.CreateTypedCommand(command)
 }
+
+func Test_CommandLineApplication_Execute_with_compound_command(t *testing.T) {
+	// Arrange
+	application := NewCommandLineApplication("test-application", "")
+
+	application.AddCommand(NewTestCompoundCommand())
+
+	application.root.SetArgs([]string{"compound", "--g1.value", "a", "--g2.value", "b"})
+
+	// Act
+	err := application.Execute(t.Context()) // TODO: Implement correct handling of compound flag structs
+
+	// Assert
+	assert.NoError(t, err)
+}
+
+type testCompoundCommand struct {
+	types.BaseCommand
+	use    types.CommandName `flag:"compound"`
+	Group1 flagGroup         `flag:"g1"`
+	Group2 flagGroup         `flag:"g2"`
+}
+
+type flagGroup struct {
+	Value string `flag:"value"`
+}
+
+var _ types.TypedCommand = (*testCompoundCommand)(nil)
+
+func NewTestCompoundCommand() *cobra.Command {
+	instance := &testCompoundCommand{
+		BaseCommand: types.BaseCommand{},
+	}
+	return commands.CreateTypedCommand(instance)
+}
