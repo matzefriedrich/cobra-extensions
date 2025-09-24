@@ -1,9 +1,17 @@
 package reflection
 
 import (
+	"reflect"
+
 	"github.com/matzefriedrich/cobra-extensions/internal/utils"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
-	"reflect"
+)
+
+const (
+	TagFlag             = "flag"
+	TagLongDescription  = "long"
+	TagShortDescription = "short"
+	TagUsage            = "usage"
 )
 
 type commandReflector[T any] struct {
@@ -48,13 +56,13 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 			field := next.valueType.Field(i)
 			isExportedField := field.PkgPath == ""
 
-			flagName := field.Tag.Get("flag")
+			flagName := field.Tag.Get(TagFlag)
 
 			fieldType := field.Type
 			if fieldType == reflect.TypeOf(types.CommandName{}) {
 				use = flagName
-				shortDescriptionText = field.Tag.Get("short")
-				longDescriptionText = field.Tag.Get("long")
+				shortDescriptionText = field.Tag.Get(TagShortDescription)
+				longDescriptionText = field.Tag.Get(TagLongDescription)
 				continue
 			}
 
@@ -74,7 +82,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 			}
 
 			if isExportedField {
-				usage := field.Tag.Get("usage")
+				usage := field.Tag.Get(TagUsage)
 				fieldTypeKind := fieldType.Kind()
 				desc := NewFlagDescriptor(flagName, usage, fieldTypeKind, fieldValue)
 				flags = append(flags, desc)
