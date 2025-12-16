@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.1] - Unreleased
+## [0.6.2] - Unreleased
 
 ### Changed
 
 * Bumps `github.com/spf13/cobra` from 1.10.1 to 1.10.2 [#25](https://github.com/matzefriedrich/cobra-extensions/pull/25)
+* Updates Go version to 1.25.5 [#26](https://github.com/matzefriedrich/cobra-extensions/pull/26)
+* Bumps `github.com/cpuguy83/go-md2man/v2` from v2.0.6 to v2.0.7 [#26](https://github.com/matzefriedrich/cobra-extensions/pull/26)
 
 
 ## [0.6.0] - cobra-extensions v0.6.0, 2025-09-24
