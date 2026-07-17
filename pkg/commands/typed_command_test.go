@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"io"
 	"testing"
 
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
@@ -10,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint:unused // The field is required by CreateTypedCommand
 type testCommand1 struct {
 	name types.CommandName `flag:"test"`
 	P1   string            `flag:"param1"`
@@ -35,18 +35,13 @@ func Test_CreateTypedCommand(t *testing.T) {
 	assert.Equal(t, "Hello World", instance.P1)
 }
 
-type logger struct {
-	w                    io.Writer
-	unsupportedFieldType int8
-}
-
+//nolint:unused // The field is required by CreateTypedCommand
 type testCommand2 struct {
 	testCommand1
 	name        types.CommandName `flag:"test"`
 	P2          int64             `flag:"param2"`
 	P3          int               `flag:"p3"`
 	BooleanFlag bool              `flag:"b"`
-	logger      logger
 }
 
 func Test_CreateTypedCommand_with_base_template(t *testing.T) {
@@ -98,6 +93,7 @@ func Test_CreateTypedCommand_with_base_template_default_values(t *testing.T) {
 	assert.False(t, instance.BooleanFlag)
 }
 
+//nolint:unused // The field is required by CreateTypedCommand
 type testCommandWithPositionalArgs struct {
 	use       types.CommandName `flag:"test3"`
 	Arguments testCommandArgs
@@ -172,13 +168,14 @@ func Test_CreateTypedCommand_with_NonRunnable_disables_the_Execute_handler(t *te
 	sut := CreateTypedCommand(instance, NonRunnable)
 
 	// Act
-	sut.ExecuteContext(t.Context())
+	_ = sut.ExecuteContext(t.Context())
 
 	// Assert
 	assert.NotNil(t, sut)
 	assert.False(t, executed)
 }
 
+//nolint:unused // The field is required by CreateTypedCommand
 type sliceCommand struct {
 	name    types.CommandName `flag:"slice"`
 	Filters []string          `flag:"filter" usage:"Filter values"`

@@ -16,9 +16,6 @@ type uidSequence struct {
 	m     sync.RWMutex
 }
 
-// globalUidSequence is a singleton instance of UidSequence used to generate globally unique sequential identifiers.
-var globalUidSequence UidSequence = &uidSequence{}
-
 // UidSequenceOption represents a functional option used to customize the behavior of an uidSequence instance.
 type UidSequenceOption func(sequence *uidSequence)
 

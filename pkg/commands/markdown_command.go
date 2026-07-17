@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra/doc"
 )
 
+//nolint:unused // The field is required by CreateTypedCommand
 type markdownDocsCommand struct {
 	use              types.CommandName `flag:"markdown" short:"Exports Markdown documentation to the specified folder" description:"Exports Markdown documentation to the specified folder"`
 	OutputFolderPath string            `flag:"output" usage:"The output folder for markdown documentation" default:"."`

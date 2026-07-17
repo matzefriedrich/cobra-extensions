@@ -42,7 +42,7 @@ func Test_CommandLineApplication_Execute_without_context_without_any_command_doe
 	sut := NewCommandLineApplication("test-app", "")
 
 	// Act
-	err := sut.Execute(nil)
+	err := sut.Execute(t.Context())
 
 	// Assert
 	assert.NoError(t, err)
@@ -87,11 +87,11 @@ func noop() executeFunc {
 	return func(context.Context) {}
 }
 
+//nolint:unused // The field is required by CreateTypedCommand
 type testCommand struct {
-	use          types.CommandName `flag:"test"`
-	typedCommand types.TypedCommand
-	executeFunc  executeFunc
-	executed     bool
+	use         types.CommandName `flag:"test"`
+	executeFunc executeFunc
+	executed    bool
 }
 
 func (t *testCommand) Executed() bool {
@@ -116,6 +116,7 @@ func (t *testCommand) AsTypedCommand() *cobra.Command {
 	return typedCommand
 }
 
+//nolint:unused // The field is required by CreateTypedCommand
 type testGroupCommand struct {
 	types.BaseCommand
 	use types.CommandName `flag:"group"`

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint:unused // The field is required by CreateTypedCommand
 type shorthandCommand struct {
 	name   types.CommandName `flag:"short"`
 	Filter string            `flag:"filter" shorthand:"f" usage:"Filter value"`

@@ -17,7 +17,7 @@ type ReflectedField struct {
 // ReflectObject takes an interface and returns a reference to a ReflectedObject, containing reflection info about the instance.
 func ReflectObject(n interface{}) *ReflectedObject {
 	value := reflect.ValueOf(n)
-	if value.Kind() == reflect.Ptr {
+	if value.Kind() == reflect.Pointer {
 		value = value.Elem()
 	}
 	valueType := reflect.TypeOf(value.Interface())

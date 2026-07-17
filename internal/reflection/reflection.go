@@ -21,7 +21,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 	arguments := NewArgumentsDescriptorWith()
 
 	value := reflect.ValueOf(n)
-	if value.Kind() == reflect.Ptr {
+	if value.Kind() == reflect.Pointer {
 		value = value.Elem()
 	}
 
@@ -34,11 +34,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 	stack := utils.MakeStack[valueItem]()
 	stack.Push(valueItem{value: value, valueType: valueType})
 
-	for {
-
-		if stack.IsEmpty() {
-			break
-		}
+	for !stack.IsEmpty() {
 
 		next := stack.Pop()
 
