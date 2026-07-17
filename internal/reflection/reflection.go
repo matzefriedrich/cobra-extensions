@@ -76,7 +76,11 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 			if isExportedField {
 				usage := field.Tag.Get("usage")
 				fieldTypeKind := fieldType.Kind()
-				desc := NewFlagDescriptor(flagName, usage, fieldTypeKind, fieldValue)
+				elementKind := reflect.Invalid
+				if fieldTypeKind == reflect.Slice {
+					elementKind = fieldType.Elem().Kind()
+				}
+				desc := NewFlagDescriptor(flagName, usage, fieldTypeKind, elementKind, fieldValue)
 				flags = append(flags, desc)
 			}
 		}

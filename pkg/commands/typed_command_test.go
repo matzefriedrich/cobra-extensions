@@ -178,3 +178,53 @@ func Test_CreateTypedCommand_with_NonRunnable_disables_the_Execute_handler(t *te
 	assert.NotNil(t, sut)
 	assert.False(t, executed)
 }
+
+type sliceCommand struct {
+	name    types.CommandName `flag:"slice"`
+	Filters []string          `flag:"filter" usage:"Filter values"`
+	Ids     []int64           `flag:"id" usage:"ID values"`
+	Ports   []int             `flag:"port" usage:"Port values"`
+	Options []bool            `flag:"opt" usage:"Option values"`
+}
+
+func (s *sliceCommand) Execute(_ context.Context) {
+}
+
+func Test_CreateTypedCommand_with_slice_flag(t *testing.T) {
+	// Arrange
+	instance := &sliceCommand{}
+	app := &cobra.Command{}
+	app.SetArgs([]string{"slice", "--filter", "v1", "--filter", "v2", "--id", "123", "--id", "456", "--port", "80", "--port", "8080", "--opt", "true", "--opt", "false"})
+
+	cmd := CreateTypedCommand(instance)
+	app.AddCommand(cmd)
+
+	// Act
+	err := app.ExecuteContext(t.Context())
+
+	// Assert
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"v1", "v2"}, instance.Filters)
+	assert.Equal(t, []int64{123, 456}, instance.Ids)
+	assert.Equal(t, []int{80, 8080}, instance.Ports)
+	assert.Equal(t, []bool{true, false}, instance.Options)
+}
+
+func Test_CreateTypedCommand_with_slice_flag_default_values(t *testing.T) {
+	// Arrange
+	instance := &sliceCommand{
+		Filters: []string{"default1", "default2"},
+	}
+	app := &cobra.Command{}
+	app.SetArgs([]string{"slice"})
+
+	cmd := CreateTypedCommand(instance)
+	app.AddCommand(cmd)
+
+	// Act
+	err := app.ExecuteContext(t.Context())
+
+	// Assert
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"default1", "default2"}, instance.Filters)
+}
