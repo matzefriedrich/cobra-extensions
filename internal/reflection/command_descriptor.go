@@ -38,23 +38,52 @@ func (d *commandDescriptor) BindFlags(target *cobra.Command) {
 		targetFlags := target.Flags()
 		name := f.name
 		usage := f.usage
+		shorthand := f.shorthand
 		switch f.kind {
 		case reflect.String:
-			targetFlags.String(name, f.AsString(), usage)
+			if shorthand != "" {
+				targetFlags.StringP(name, shorthand, f.AsString(), usage)
+			} else {
+				targetFlags.String(name, f.AsString(), usage)
+			}
 		case reflect.Int, reflect.Int64:
-			targetFlags.Int64(name, f.AsInt64(), usage)
+			if shorthand != "" {
+				targetFlags.Int64P(name, shorthand, f.AsInt64(), usage)
+			} else {
+				targetFlags.Int64(name, f.AsInt64(), usage)
+			}
 		case reflect.Bool:
-			targetFlags.Bool(name, f.AsBool(), usage)
+			if shorthand != "" {
+				targetFlags.BoolP(name, shorthand, f.AsBool(), usage)
+			} else {
+				targetFlags.Bool(name, f.AsBool(), usage)
+			}
 		case reflect.Slice:
 			switch f.elementKind {
 			case reflect.String:
-				targetFlags.StringSlice(name, f.value.Interface().([]string), usage)
+				if shorthand != "" {
+					targetFlags.StringSliceP(name, shorthand, f.value.Interface().([]string), usage)
+				} else {
+					targetFlags.StringSlice(name, f.value.Interface().([]string), usage)
+				}
 			case reflect.Int:
-				targetFlags.IntSlice(name, f.value.Interface().([]int), usage)
+				if shorthand != "" {
+					targetFlags.IntSliceP(name, shorthand, f.value.Interface().([]int), usage)
+				} else {
+					targetFlags.IntSlice(name, f.value.Interface().([]int), usage)
+				}
 			case reflect.Int64:
-				targetFlags.Int64Slice(name, f.value.Interface().([]int64), usage)
+				if shorthand != "" {
+					targetFlags.Int64SliceP(name, shorthand, f.value.Interface().([]int64), usage)
+				} else {
+					targetFlags.Int64Slice(name, f.value.Interface().([]int64), usage)
+				}
 			case reflect.Bool:
-				targetFlags.BoolSlice(name, f.value.Interface().([]bool), usage)
+				if shorthand != "" {
+					targetFlags.BoolSliceP(name, shorthand, f.value.Interface().([]bool), usage)
+				} else {
+					targetFlags.BoolSlice(name, f.value.Interface().([]bool), usage)
+				}
 			}
 		}
 	}

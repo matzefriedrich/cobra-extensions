@@ -75,12 +75,13 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 
 			if isExportedField {
 				usage := field.Tag.Get("usage")
+				shorthand := field.Tag.Get("shorthand")
 				fieldTypeKind := fieldType.Kind()
 				elementKind := reflect.Invalid
 				if fieldTypeKind == reflect.Slice {
 					elementKind = fieldType.Elem().Kind()
 				}
-				desc := NewFlagDescriptor(flagName, usage, fieldTypeKind, elementKind, fieldValue)
+				desc := NewFlagDescriptor(flagName, shorthand, usage, fieldTypeKind, elementKind, fieldValue)
 				flags = append(flags, desc)
 			}
 		}
