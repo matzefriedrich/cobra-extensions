@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.2] - Unreleased
 
+### Added
+
+* Support for mapping flags specified multiple times to slice fields in command structs (supported types: `[]string`, `[]int`, `[]int64`, `[]bool`).
+
 ### Changed
 
 * Bumps `github.com/spf13/cobra` from 1.10.1 to 1.10.2 [#25](https://github.com/matzefriedrich/cobra-extensions/pull/25)
