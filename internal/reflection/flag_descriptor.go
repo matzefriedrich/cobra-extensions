@@ -12,10 +12,11 @@ const (
 
 // FlagDescriptor holds metadata for a command flag, including its name, type, value, and usage description.
 type FlagDescriptor struct {
-	name  string
-	kind  reflect.Kind
-	value reflect.Value
-	usage string
+	name        string
+	kind        reflect.Kind
+	elementKind reflect.Kind
+	value       reflect.Value
+	usage       string
 }
 
 // AsString returns the string representation of the flag's value.
@@ -34,12 +35,13 @@ func (d *FlagDescriptor) AsBool() bool {
 }
 
 // NewFlagDescriptor creates a new FlagDescriptor given the flag's name, usage description, type, and initial value.
-func NewFlagDescriptor(name string, usage string, t reflect.Kind, v reflect.Value) FlagDescriptor {
+func NewFlagDescriptor(name string, usage string, t reflect.Kind, et reflect.Kind, v reflect.Value) FlagDescriptor {
 	return FlagDescriptor{
-		name:  name,
-		usage: usage,
-		kind:  t,
-		value: v,
+		name:        name,
+		usage:       usage,
+		kind:        t,
+		elementKind: et,
+		value:       v,
 	}
 }
 
@@ -64,6 +66,13 @@ func (d *FlagDescriptor) SetValue(value interface{}) error {
 		b, ok := value.(bool)
 		if ok {
 			d.value.SetBool(b)
+			return nil
+		}
+		return invalidValueError()
+	case reflect.Slice:
+		v := reflect.ValueOf(value)
+		if v.Kind() == reflect.Slice {
+			d.value.Set(v)
 			return nil
 		}
 		return invalidValueError()
