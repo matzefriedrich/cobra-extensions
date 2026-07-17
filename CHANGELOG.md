@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for mapping flags specified multiple times to slice fields in command structs (supported types: `[]string`, `[]int`, `[]int64`, `[]bool`).
+* Support for short flag names (shorthands) via the `shorthand` struct tag.
 
 ### Changed
 
