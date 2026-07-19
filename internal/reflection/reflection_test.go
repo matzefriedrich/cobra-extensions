@@ -9,7 +9,7 @@ import (
 )
 
 type simpleCommand struct {
-	Name types.CommandName `flag:"simple" short:"short desc" long:"long desc"`
+	Name types.CommandName `flag:"simple" usage:"short desc"`
 	Flag string            `flag:"flag" shorthand:"f" usage:"flag usage"`
 }
 

@@ -2,7 +2,10 @@ package reflection
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -81,6 +84,63 @@ func (d *FlagDescriptor) SetValue(value interface{}) error {
 	}
 
 	return errors.New(ErrorFlagTypeNotSupported)
+}
+
+// SetValueFromText sets the flag's value from its string representation.
+func (d *FlagDescriptor) SetValueFromText(text string) error {
+	switch d.kind {
+	case reflect.String:
+		return d.SetValue(text)
+	case reflect.Int, reflect.Int64:
+		val, err := strconv.ParseInt(text, 10, 64)
+		if err != nil {
+			return err
+		}
+		return d.SetValue(val)
+	case reflect.Bool:
+		val, err := strconv.ParseBool(text)
+		if err != nil {
+			return err
+		}
+		return d.SetValue(val)
+	case reflect.Slice:
+		parts := strings.Split(text, ",")
+		switch d.elementKind {
+		case reflect.String:
+			return d.SetValue(parts)
+		case reflect.Int:
+			intParts := make([]int, len(parts))
+			for i, p := range parts {
+				v, err := strconv.Atoi(strings.TrimSpace(p))
+				if err != nil {
+					return err
+				}
+				intParts[i] = v
+			}
+			return d.SetValue(intParts)
+		case reflect.Int64:
+			intParts := make([]int64, len(parts))
+			for i, p := range parts {
+				v, err := strconv.ParseInt(strings.TrimSpace(p), 10, 64)
+				if err != nil {
+					return err
+				}
+				intParts[i] = v
+			}
+			return d.SetValue(intParts)
+		case reflect.Bool:
+			boolParts := make([]bool, len(parts))
+			for i, p := range parts {
+				v, err := strconv.ParseBool(strings.TrimSpace(p))
+				if err != nil {
+					return err
+				}
+				boolParts[i] = v
+			}
+			return d.SetValue(boolParts)
+		}
+	}
+	return fmt.Errorf("unsupported flag type: %v", d.kind)
 }
 
 func invalidValueError() error {
