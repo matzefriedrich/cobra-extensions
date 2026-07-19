@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+* Support for a unified `cobra-x` struct tag that allows defining flag name expressions (e.g., `-n|--name`) and key-value attributes (`help`, `description`, `default`).
+* Support for mixing `cobra-extensions` tags with other annotations like `json`.
+* Support for defining command metadata on embedded `types.BaseCommand` fields, which helps avoiding "unused field" linter warnings.
+* Added support for unexported command metadata fields (e.g., `_ types.CommandName`).
+
+### Deprecated
+
+* `types.CommandName`: Use `types.BaseCommand` and the `cobra-x` tag for defining command metadata instead.
+
+### Changed
+
+* Refactored reflection logic into specialized modules (`cobra_x_extensions.go`, `legacy_cobra_extension.go`) to improve maintainability and ensure perfect backward compatibility.
+* Updated `markdown_command.go` to use the new `cobra-x` tag syntax and idiomatic default value initialization.
+
 ## [0.6.2] - cobra-extensions v0.6.2, 2026-07-17
 
 ### Added
