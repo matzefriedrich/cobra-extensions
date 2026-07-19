@@ -12,11 +12,10 @@ import (
 	"github.com/spf13/cobra/doc"
 )
 
-//nolint:unused // The field is required by CreateTypedCommand
 type markdownDocsCommand struct {
-	use              types.CommandName `flag:"markdown" short:"Exports Markdown documentation to the specified folder" description:"Exports Markdown documentation to the specified folder"`
-	OutputFolderPath string            `flag:"output" usage:"The output folder for markdown documentation" default:"."`
-	root             *cobra.Command
+	types.BaseCommand `cobra-x:"markdown, help='Exports Markdown documentation to the specified folder'"`
+	OutputFolderPath  string `cobra-x:"--output, help='The output folder for markdown documentation', default='.'"`
+	root              *cobra.Command
 }
 
 func (m *markdownDocsCommand) Execute(_ context.Context) {

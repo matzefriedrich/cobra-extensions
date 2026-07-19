@@ -1,9 +1,10 @@
 package reflection
 
 import (
+	"reflect"
+
 	"github.com/matzefriedrich/cobra-extensions/internal/utils"
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
-	"reflect"
 )
 
 type commandReflector[T any] struct {
@@ -39,19 +40,42 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 		next := stack.Pop()
 
 		numFields := next.value.NumField()
-		for i := 0; i < numFields; i++ {
+		for i := range numFields {
 
 			field := next.valueType.Field(i)
 			isExportedField := field.PkgPath == ""
 
-			flagName := field.Tag.Get("flag")
-
 			fieldType := field.Type
-			if fieldType == reflect.TypeOf(types.CommandName{}) {
-				use = flagName
-				shortDescriptionText = field.Tag.Get("short")
-				longDescriptionText = field.Tag.Get("long")
-				continue
+			if fieldType == reflect.TypeOf(types.CommandName{}) || reflect.TypeOf(types.BaseCommand{}) == fieldType {
+				useX, shortX, longX, okX := reflectCobraXCommand(field)
+				if okX {
+					if useX != "" {
+						use = useX
+					}
+					if shortX != "" {
+						shortDescriptionText = shortX
+					}
+					if longX != "" {
+						longDescriptionText = longX
+					}
+				} else {
+					useL, shortL, longL, okL := reflectLegacyCommand(field)
+					if okL {
+						if useL != "" {
+							use = useL
+						}
+						if shortL != "" {
+							shortDescriptionText = shortL
+						}
+						if longL != "" {
+							longDescriptionText = longL
+						}
+					}
+				}
+
+				if fieldType == reflect.TypeOf(types.CommandName{}) {
+					continue
+				}
 			}
 
 			fieldValue := next.value.Field(i)
@@ -70,14 +94,21 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 			}
 
 			if isExportedField {
-				usage := field.Tag.Get("usage")
-				shorthand := field.Tag.Get("shorthand")
+				flagName, shorthand, usage, defaultValue, okX := reflectCobraXFlag(field)
+				if !okX {
+					flagName, shorthand, usage, defaultValue, _ = reflectLegacyFlag(field)
+				}
+
 				fieldTypeKind := fieldType.Kind()
 				elementKind := reflect.Invalid
 				if fieldTypeKind == reflect.Slice {
 					elementKind = fieldType.Elem().Kind()
 				}
+
 				desc := NewFlagDescriptor(flagName, shorthand, usage, fieldTypeKind, elementKind, fieldValue)
+				if defaultValue != "" && fieldValue.IsZero() {
+					_ = desc.SetValueFromText(defaultValue)
+				}
 				flags = append(flags, desc)
 			}
 		}
