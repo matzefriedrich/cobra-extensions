@@ -11,6 +11,7 @@ import (
 
 //nolint:unused // The field is required by CreateTypedCommand
 type testCommand1 struct {
+	//nolint:staticcheck // required for legacy functionality
 	name types.CommandName `flag:"test"`
 	P1   string            `flag:"param1"`
 }
@@ -36,8 +37,10 @@ func Test_CreateTypedCommand(t *testing.T) {
 }
 
 //nolint:unused // The field is required by CreateTypedCommand
+//nolint:staticcheck // Required for legacy functionality
 type testCommand2 struct {
 	testCommand1
+	//nolint:staticcheck // required for legacy functionality
 	name        types.CommandName `flag:"test"`
 	P2          int64             `flag:"param2"`
 	P3          int               `flag:"p3"`
@@ -95,6 +98,7 @@ func Test_CreateTypedCommand_with_base_template_default_values(t *testing.T) {
 
 //nolint:unused // The field is required by CreateTypedCommand
 type testCommandWithPositionalArgs struct {
+	//nolint:staticcheck // required for legacy functionality
 	use       types.CommandName `flag:"test3"`
 	Arguments testCommandArgs
 }
@@ -177,6 +181,7 @@ func Test_CreateTypedCommand_with_NonRunnable_disables_the_Execute_handler(t *te
 
 //nolint:unused // The field is required by CreateTypedCommand
 type sliceCommand struct {
+	//nolint:staticcheck // required for legacy functionality
 	name    types.CommandName `flag:"slice"`
 	Filters []string          `flag:"filter" usage:"Filter values"`
 	Ids     []int64           `flag:"id" usage:"ID values"`

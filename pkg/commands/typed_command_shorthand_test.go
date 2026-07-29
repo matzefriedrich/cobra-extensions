@@ -11,6 +11,7 @@ import (
 
 //nolint:unused // The field is required by CreateTypedCommand
 type shorthandCommand struct {
+	//nolint:staticcheck // required for legacy functionality
 	name   types.CommandName `flag:"short"`
 	Filter string            `flag:"filter" shorthand:"f" usage:"Filter value"`
 	Toggle bool              `flag:"toggle" shorthand:"t" usage:"Toggle value"`

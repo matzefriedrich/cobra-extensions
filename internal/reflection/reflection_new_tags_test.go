@@ -7,7 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//nolint:unused
 type newTagsCommand struct {
+	//nolint:staticcheck // required for legacy functionality
 	use   types.CommandName `cobra-x:"newcmd, help='new short', description='new long'"`
 	Name  string            `cobra-x:"-n|--name, help='name usage'"`
 	Force bool              `cobra-x:"--force, help='force usage'"`
@@ -32,7 +34,7 @@ func Test_ReflectCommandDescriptor_with_new_tags(t *testing.T) {
 	assert.Equal(t, "new long", descriptor.long)
 
 	assert.Len(t, descriptor.flags, 2)
-	
+
 	var nameFlag *FlagDescriptor
 	for _, f := range descriptor.flags {
 		if f.name == "name" {
@@ -60,6 +62,7 @@ func Test_ReflectCommandDescriptor_with_BaseCommand_tags(t *testing.T) {
 }
 
 type unexportedUseCommand struct {
+	//nolint:staticcheck // required for legacy functionality
 	_    types.CommandName `cobra-x:"unexported"`
 	Flag string            `cobra-x:"--flag"`
 }

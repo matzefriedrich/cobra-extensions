@@ -1,27 +1,38 @@
 package reflection
 
 import (
+	"errors"
 	"reflect"
+
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 )
 
-func reflectLegacyCommand(field reflect.StructField) (use, short, long string, ok bool) {
-	use = field.Tag.Get("flag")
-	short = field.Tag.Get("usage")
-
+func reflectLegacyCommand(field reflect.StructField) (*CobraXCommandTag, error) {
+	use := field.Tag.Get("flag")
+	short := field.Tag.Get("usage")
 	if use == "" && short == "" {
-		return "", "", "", false
+		return nil, errors.New(ErrorCobraXLegacyTagsNotFound)
 	}
-	return use, short, "", true
+	return &CobraXCommandTag{
+		Use:         use,
+		Help:        short,
+		Description: short,
+	}, nil
 }
 
-func reflectLegacyFlag(field reflect.StructField) (name, shorthand, usage, defaultValue string, ok bool) {
-	usage = field.Tag.Get("usage")
-	shorthand = field.Tag.Get("shorthand")
-	name = field.Tag.Get("flag")
-	defaultValue = field.Tag.Get("default")
+func reflectLegacyFlag(field reflect.StructField) (*CobraXFlagTag, error) {
+	usage := field.Tag.Get("usage")
+	shorthand := field.Tag.Get("shorthand")
+	name := field.Tag.Get("flag")
+	defaultValue := field.Tag.Get("default")
 
 	if name == "" && shorthand == "" && usage == "" && defaultValue == "" {
-		return "", "", "", "", false
+		return nil, types.NewCobraXError(ErrorCobraXLegacyTagsNotFound)
 	}
-	return name, shorthand, usage, defaultValue, true
+	return &CobraXFlagTag{
+		Name:         name,
+		Shorthand:    shorthand,
+		Usage:        usage,
+		DefaultValue: defaultValue,
+	}, nil
 }
