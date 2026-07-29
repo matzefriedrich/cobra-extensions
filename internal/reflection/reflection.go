@@ -1,9 +1,12 @@
 package reflection
 
 import (
-	"github.com/matzefriedrich/cobra-extensions/internal/utils"
-	"github.com/matzefriedrich/cobra-extensions/pkg/types"
+	"errors"
 	"reflect"
+
+	"github.com/matzefriedrich/cobra-extensions/internal/utils"
+	"github.com/matzefriedrich/cobra-extensions/internal/utils/ternary"
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 )
 
 type commandReflector[T any] struct {
@@ -28,8 +31,8 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 	valueType := reflect.TypeOf(value.Interface())
 	valueTypeName := valueType.Name()
 	use := utils.ExtractCommandUse(valueTypeName)
-	shortDescriptionText := ""
-	longDescriptionText := ""
+	shortHelpText := ""
+	longHelpText := ""
 
 	stack := utils.MakeStack[valueItem]()
 	stack.Push(valueItem{value: value, valueType: valueType})
@@ -39,19 +42,30 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 		next := stack.Pop()
 
 		numFields := next.value.NumField()
-		for i := 0; i < numFields; i++ {
+		for i := range numFields {
 
 			field := next.valueType.Field(i)
 			isExportedField := field.PkgPath == ""
 
-			flagName := field.Tag.Get("flag")
-
 			fieldType := field.Type
-			if fieldType == reflect.TypeOf(types.CommandName{}) {
-				use = flagName
-				shortDescriptionText = field.Tag.Get("short")
-				longDescriptionText = field.Tag.Get("long")
-				continue
+			//nolint:staticcheck // required for legacy functionality
+			if fieldType == reflect.TypeFor[types.CommandName]() || reflect.TypeFor[types.BaseCommand]() == fieldType {
+				tag, tagErr := reflectCobraXCommand(field)
+				if tagErr != nil && errors.Is(tagErr, ErrCobraXCommandNotFound) {
+					tag, tagErr = reflectLegacyCommand(field)
+					if tagErr != nil && errors.Is(tagErr, ErrCobraXLegacyTagsNotFound) {
+						continue
+					}
+				}
+				if tag != nil {
+					use = ternary.ValueOrDefault(tag.Use, ternary.NotNilOrWhitespace, use)
+					shortHelpText = ternary.ValueOrDefault(tag.Help, ternary.NotNilOrWhitespace, shortHelpText)
+					longHelpText = ternary.ValueOrDefault(tag.Description, ternary.NotNilOrWhitespace, longHelpText)
+				}
+				//nolint:staticcheck // required for legacy functionality
+				if fieldType == reflect.TypeFor[types.CommandName]() {
+					continue
+				}
 			}
 
 			fieldValue := next.value.Field(i)
@@ -70,20 +84,27 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 			}
 
 			if isExportedField {
-				usage := field.Tag.Get("usage")
-				shorthand := field.Tag.Get("shorthand")
+				tag, tagErr := reflectCobraXFlag(field)
+				if tagErr != nil {
+					tag, _ = reflectLegacyFlag(field)
+				}
+
 				fieldTypeKind := fieldType.Kind()
 				elementKind := reflect.Invalid
 				if fieldTypeKind == reflect.Slice {
 					elementKind = fieldType.Elem().Kind()
 				}
-				desc := NewFlagDescriptor(flagName, shorthand, usage, fieldTypeKind, elementKind, fieldValue)
+
+				desc := NewFlagDescriptor(tag.Name, tag.Shorthand, tag.Usage, fieldTypeKind, elementKind, fieldValue)
+				if tag.DefaultValue != "" && fieldValue.IsZero() {
+					_ = desc.SetValueFromText(tag.DefaultValue)
+				}
 				flags = append(flags, desc)
 			}
 		}
 	}
 
-	return NewCommandDescriptor(use, shortDescriptionText, longDescriptionText, flags, arguments)
+	return NewCommandDescriptor(use, shortHelpText, longHelpText, flags, arguments)
 }
 
 func tryReflectArgumentsDescriptor(m ReflectedObject, target types.ArgumentsDescriptor) bool {

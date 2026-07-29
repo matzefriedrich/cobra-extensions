@@ -1,6 +1,8 @@
 package types
 
 // CommandName represents the name of a command in the system.
+//
+// Deprecated: Use BaseCommand and cobra-x tags instead.
 type CommandName struct {
 	name string
 }

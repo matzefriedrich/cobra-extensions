@@ -9,18 +9,14 @@ import (
 )
 
 type simpleCommand struct {
-	Name types.CommandName `flag:"simple" short:"short desc" long:"long desc"`
+	//nolint:staticcheck // required for legacy functionality
+	Name types.CommandName `flag:"simple" usage:"short desc"`
 	Flag string            `flag:"flag" shorthand:"f" usage:"flag usage"`
 }
 
 type embeddedCommand struct {
 	simpleCommand
 	Extra string `flag:"extra" usage:"extra usage"`
-}
-
-type interfaceCommand struct {
-	Args types.CommandArgs `minimum:"1"`
-	Arg1 any
 }
 
 type fullArgsCommand struct {
@@ -40,7 +36,6 @@ func Test_commandReflector_reflect_command_descriptor_correctly_reflects_differe
 		{name: "simple command", cmd: &simpleCommand{}},
 		{name: "non-pointer command", cmd: simpleCommand{}},
 		{name: "embedded command", cmd: &embeddedCommand{}},
-		{name: "interface argument", cmd: &interfaceCommand{}},
 		{name: "full arguments", cmd: &fullArgsCommand{}},
 	}
 

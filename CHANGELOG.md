@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.2] - cobra-extensions v0.6.2, 2026-07-17
+## [0.7.0] - 2026-07-29
+
+### Added
+
+* Support for a unified `cobra-x` struct tag that allows defining flag name expressions (e.g., `-n|--name`) and key-value attributes (`help`, `description`, `default`).
+* Support for mixing `cobra-extensions` tags with other annotations like `json`.
+* Support for defining command metadata on embedded `types.BaseCommand` fields, which helps avoiding "unused field" linter warnings.
+* Added support for unexported command metadata fields (e.g., `_ types.CommandName`).
+
+### Deprecated
+
+* `types.CommandName`: Use `types.BaseCommand` and the `cobra-x` tag for defining command metadata instead.
+
+### Changed
+
+* Refactored reflection logic into specialized modules (`cobra_x_extensions.go`, `legacy_cobra_extension.go`) to improve maintainability and ensure perfect backward compatibility.
+* Updated `markdown_command.go` to use the new `cobra-x` tag syntax and idiomatic default value initialization.
+
+## [0.6.2] - 2026-07-17
 
 ### Added
 
@@ -19,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Bumps `github.com/cpuguy83/go-md2man/v2` from v2.0.6 to v2.0.7 [#26](https://github.com/matzefriedrich/cobra-extensions/pull/26)
 
 
-## [0.6.0] - cobra-extensions v0.6.0, 2025-09-24
+## [0.6.0] - 2025-09-24
 
 ### Added
 
@@ -38,74 +56,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * The `CommandDescriptor` key generation and usage (command key no longer needed).
 
 
-## [0.5.3] - cobra-extensions v0.5.3, 2025-09-09
+## [0.5.3] - 2025-09-09
 
 * Bumps `github.com/spf13/cobra` from 1.9.1 to 1.10.1 [#22](https://github.com/matzefriedrich/cobra-extensions/pull/22)
 * Bumps `github.com/stretchr/testify` from 1.11.0 to 1.11.1 [#23](https://github.com/matzefriedrich/cobra-extensions/pull/23)
 
 
-## [0.5.2] - cobra-extensions v0.5.2, 2025-09-05
+## [0.5.2] - 2025-09-05
 
 * Bumps `github.com/stretchr/testify` from 1.10.0 to 1.11.0 [#21](https://github.com/matzefriedrich/cobra-extensions/pull/21)
 
 
-## [0.5.1] - cobra-extensions v0.5.1, 2025-05-27
+## [0.5.1] - 2025-05-27
 
 ### Changed
 
 * Removes the `google/uuid` package dependency and replaces it with a custom thread-safe unique identifier generator (a simple incrementing sequence generator (`UidSequence`) that uses a mutex lock to ensure thread safety). So, instead of using UUID strings for command keys, the code now uses sequential numeric identifiers.
 
 
-## [0.5.0] - cobra-extensions v0.5.0, 2025-05-26
+## [0.5.0] - 2025-05-26
 
 ### Changed
 
 * Removes example modules from the package repository to thin out package dependencies (and reduce the frequency of automated version bump pull requests).
 
 
-## [0.4.6] - cobra-extensions v0.4.6, 2025-05-19
+## [0.4.6] - 2025-05-19
 
 ### Changed
 
 * Bumps `golang.org/x/crypto` from 0.31.0 to 0.35.0 [#18](https://github.com/matzefriedrich/cobra-extensions/pull/18)
 
 
-## [0.4.5] - cobra-extensions v0.4.5, 2025-03-06
+## [0.4.5] - 2025-03-06
 
 ### Changed
 
 * Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.8.2 to 2.8.3 [#17](https://github.com/matzefriedrich/cobra-extensions/pull/17)
 
 
-## [0.4.4] - cobra-extensions v0.4.4, 2025-02-19
+## [0.4.4] - 2025-02-19
 
 ### Changed
 
 * Bumps `github.com/spf13/cobra` from 1.8.1 to 1.9.1 [#16](https://github.com/matzefriedrich/cobra-extensions/pull/16)
 
 
-## [0.4.3] - cobra-extensions v0.4.3, 2025-01-13
+## [0.4.3] - 2025-01-13
 
 ### Changed
 
 * Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.8.1 to 2.8.2 [#15](https://github.com/matzefriedrich/cobra-extensions/pull/15)
 
 
-## [0.4.2] - cobra-extensions v0.4.2, 2024-12-16
+## [0.4.2] - 2024-12-16
 
 ### Changed
 
 * Bumps `golang.org/x/crypto` from 0.17.0 to 0.31.0 [#14](https://github.com/matzefriedrich/cobra-extensions/pull/14)
 
 
-## [0.4.1] - cobra-extensions v0.4.1, 2024-12-03
+## [0.4.1] - 2024-12-03
 
 ### Changed
 
 * Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.8.0 to 2.8.1 [#13](https://github.com/matzefriedrich/cobra-extensions/pull/13)
 
 
-## [0.4.0] - cobra-extensions v0.4.0, 2024-11-27
+## [0.4.0] - 2024-11-27
 
 ### Added
 
@@ -118,21 +136,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Improved and expanded descriptions for example command groups and applications to enhance clarity and usability.
 
 
-## [0.3.3] - cobra-extensions v0.3.3, 2024-11-27
+## [0.3.3] - 2024-11-27
 
 ### Changed
 
 * Bumps `github.com/stretchr/testify` from 1.9.0 to 1.10.0 [#11](https://github.com/matzefriedrich/cobra-extensions/pull/11)
 
 
-## [0.3.2] - cobra-extensions v0.3.2, 2024-11-12
+## [0.3.2] - 2024-11-12
 
 ### Changed
 
 * Bumps `github.com/ProtonMail/gopenpgp/v2` from 2.7.5 to 2.8.0 [#10](https://github.com/matzefriedrich/cobra-extensions/pull/10)
 
 
-## [0.3.1] - cobra-extensions v0.3.1, 2024-09-26
+## [0.3.1] - 2024-09-26
 
 ### Added
 
@@ -144,7 +162,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Minor refactorings to the `command_setup.go` module
 
 
-## [0.3.0] - cobra-extensions v0.3.0, 2024-09-26
+## [0.3.0] - 2024-09-26
 
 ### Added
 
@@ -158,7 +176,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Upgraded Go SDK version from 1.21 to 1.23.
 
 
-## [0.2.6] - cobra-extensions v0.2.6, 2024-08-27
+## [0.2.6] - 2024-08-27
 
 ### Added
 
@@ -171,14 +189,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adopts changes to examples
 
 
-## [0.2.5] - cobra-extensions v0.2.5, 2024-06-12
+## [0.2.5] - 2024-06-12
 
 ### Fixes
 
 - The `reflection` module ignores fields of unsupported types
 
 
-## [0.2.3] - cobra-extensions v0.2.3, 2024-04-25
+## [0.2.3] - 2024-04-25
 
 ### Added
 
@@ -191,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactors the whole package (separates types and functions into several new smalled module types), but the package remains compatible with the previous version
 
 
-## [0.1.0] - cobra-extensions v0.1.0, 2023-10-27
+## [0.1.0] - 2023-10-27
 
 ### Added 
 

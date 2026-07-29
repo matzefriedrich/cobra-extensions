@@ -89,6 +89,7 @@ func noop() executeFunc {
 
 //nolint:unused // The field is required by CreateTypedCommand
 type testCommand struct {
+	//nolint:staticcheck // required for legacy functionality
 	use         types.CommandName `flag:"test"`
 	executeFunc executeFunc
 	executed    bool
@@ -119,6 +120,7 @@ func (t *testCommand) AsTypedCommand() *cobra.Command {
 //nolint:unused // The field is required by CreateTypedCommand
 type testGroupCommand struct {
 	types.BaseCommand
+	//nolint:staticcheck // required for legacy functionality
 	use types.CommandName `flag:"group"`
 }
 

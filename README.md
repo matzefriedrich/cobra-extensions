@@ -53,8 +53,8 @@ func init() {
 
 ```go
 type greetCommand struct {
-    use  types.CommandName `flag:"hello" short:"Prints a greeting."`
-    Name string            `flag:"name" short:"The name to greet." default:"World"`
+    types.BaseCommand `cobra-x:"hello, help='Prints a greeting.'"`
+    Name              string `cobra-x:"-n|--name, help='The name to greet', default='World'"`
 }
 
 func (g *greetCommand) Execute(_ context.Context) {
@@ -68,13 +68,21 @@ func NewGreetCommand() *cobra.Command {
 
 Can you spot the difference? There are no global vars, no manual flag binding, no extra ceremony. This pattern improves clarity, testability, and maintainability - especially as your CLI grows beyond a handful of commands.
 
+> [!IMPORTANT]
+> Since version `v0.7.0`, `types.CommandName` is deprecated. Use `types.BaseCommand` and the `cobra-x` tag for defining command metadata instead.
+
 ## How struct tags become CLI flags
 
-Each field in your command struct becomes a flag. You control its name, description, and default value through struct tags:
+Each field in your command struct becomes a flag. You control its name, description, and shorthand through the `cobra-x` struct tag:
 
 ```go
-Name string `flag:"name" short:"The name to greet." default:"World"`
+Name string `cobra-x:"-n|--name, help='The name to greet', default='World'"`
 ```
+
+The `cobra-x` tag supports:
+- Simplified name expressions: `-n|--name`, `--name`, or just `-n`.
+- Key-value attributes: `help`, `description`, `default`.
+- Backward compatibility with legacy tags like `name`, `shorthand`, `usage`, and `default`.
 
 See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for complete usage examples.
 
