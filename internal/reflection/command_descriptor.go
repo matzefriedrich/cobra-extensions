@@ -9,11 +9,12 @@ import (
 
 // CommandDescriptor represents the metadata and configuration for a command, including its use, descriptions, flags, and arguments.
 type commandDescriptor struct {
-	use       string
-	short     string
-	long      string
-	flags     []FlagDescriptor
-	arguments types.ArgumentsDescriptor
+	use                  string
+	short                string
+	long                 string
+	flags                []FlagDescriptor
+	arguments            types.ArgumentsDescriptor
+	defaultValueProvider types.DefaultValueProvider
 }
 
 var _ types.CommandDescriptor = (*commandDescriptor)(nil)
@@ -112,6 +113,14 @@ func (d *commandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
 	flags := target.Flags()
 	for _, f := range d.flags {
 		flagName := f.name
+		if !flags.Changed(flagName) && f.settingKey != "" && d.defaultValueProvider != nil {
+			val, err := d.defaultValueProvider.GetValue(f.settingKey)
+			if err == nil && val != nil {
+				_ = f.SetValueFromText(*val)
+				continue
+			}
+		}
+
 		switch f.kind {
 		case reflect.String:
 			value, _ := flags.GetString(flagName)
@@ -139,4 +148,8 @@ func (d *commandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
 			}
 		}
 	}
+}
+
+func (d *commandDescriptor) SetDefaultValueProvider(provider types.DefaultValueProvider) {
+	d.defaultValueProvider = provider
 }
