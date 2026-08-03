@@ -24,6 +24,7 @@ type CobraXFlagTag struct {
 	Shorthand    string
 	Usage        string
 	DefaultValue string
+	SettingKey   string
 }
 
 const (
@@ -34,6 +35,7 @@ const (
 	cobraXDescriptionTag          = "description"
 	cobraXUsageTag                = "usage"
 	cobraXDefaultValueTag         = "default"
+	cobraXSettingKeyTag           = "setting-key"
 )
 
 var (
@@ -77,6 +79,7 @@ func reflectCobraXFlag(field reflect.StructField) (*CobraXFlagTag, error) {
 	}
 
 	defaultValue = attributes[cobraXDefaultValueTag]
+	settingKey := attributes[cobraXSettingKeyTag]
 
 	return &CobraXFlagTag{
 		CobraXTag:    CobraXTag{Attributes: attributes},
@@ -84,5 +87,6 @@ func reflectCobraXFlag(field reflect.StructField) (*CobraXFlagTag, error) {
 		Shorthand:    shorthand,
 		Usage:        usageOrDescription,
 		DefaultValue: defaultValue,
+		SettingKey:   settingKey,
 	}, nil
 }
