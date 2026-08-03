@@ -25,8 +25,7 @@ func Test_envProvider_GetValue_transforms_key_without_prefix(t *testing.T) {
 
 	// Assert
 	assert.NoError(t, err)
-	assert.NotNil(t, val)
-	assert.Equal(t, expectedValue, *val)
+	assert.Equal(t, expectedValue, val)
 }
 
 func Test_envProvider_GetValue_transforms_key_with_prefix(t *testing.T) {
@@ -48,8 +47,7 @@ func Test_envProvider_GetValue_transforms_key_with_prefix(t *testing.T) {
 
 	// Assert
 	assert.NoError(t, err)
-	assert.NotNil(t, val)
-	assert.Equal(t, expectedValue, *val)
+	assert.Equal(t, expectedValue, val)
 }
 
 func Test_envProvider_GetValue_returns_nil_if_env_var_is_not_set(t *testing.T) {
@@ -62,7 +60,7 @@ func Test_envProvider_GetValue_returns_nil_if_env_var_is_not_set(t *testing.T) {
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Nil(t, val)
+	assert.Equal(t, "", val)
 }
 
 func Test_envProvider_GetValue_handles_prefix_with_trailing_underscore(t *testing.T) {
@@ -84,6 +82,5 @@ func Test_envProvider_GetValue_handles_prefix_with_trailing_underscore(t *testin
 
 	// Assert
 	assert.NoError(t, err)
-	assert.NotNil(t, val)
-	assert.Equal(t, expectedValue, *val)
+	assert.Equal(t, expectedValue, val)
 }

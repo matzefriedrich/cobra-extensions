@@ -13,11 +13,11 @@ type mockProvider struct {
 	values map[string]string
 }
 
-func (m *mockProvider) GetValue(key string) (*string, error) {
+func (m *mockProvider) GetValue(key string) (string, error) {
 	if val, ok := m.values[key]; ok {
-		return &val, nil
+		return val, nil
 	}
-	return nil, nil
+	return "", nil
 }
 
 type testHandler struct {

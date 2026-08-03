@@ -32,7 +32,7 @@ func NewEnvironmentVariableDefaultValueProvider(options ...EnvProviderOption) ty
 // GetValue retrieves the value associated with the specified key from environment variables.
 // The key is transformed by replacing "." with "_" and converting it to uppercase.
 // If a prefix is set, it is prepended to the key with an underscore.
-func (p *envProvider) GetValue(key string) (*string, error) {
+func (p *envProvider) GetValue(key string) (string, error) {
 	envKey := strings.ReplaceAll(key, ".", "_")
 	envKey = strings.ToUpper(envKey)
 
@@ -43,8 +43,8 @@ func (p *envProvider) GetValue(key string) (*string, error) {
 
 	val, ok := os.LookupEnv(envKey)
 	if !ok {
-		return nil, nil
+		return "", nil
 	}
 
-	return &val, nil
+	return val, nil
 }

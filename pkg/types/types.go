@@ -55,9 +55,9 @@ type CommandSetup interface {
 type DefaultValueProvider interface {
 
 	// GetValue retrieves the value associated with the specified key.
-	// It returns a pointer to the string value if found, or nil if not found.
+	// It returns the value if found, or an empty string if not found.
 	// An error is returned if the retrieval process fails.
-	GetValue(key string) (*string, error)
+	GetValue(key string) (string, error)
 }
 
 type contextKey string

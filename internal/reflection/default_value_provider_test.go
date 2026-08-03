@@ -14,14 +14,14 @@ type mockDefaultValueProvider struct {
 	err    error
 }
 
-func (m *mockDefaultValueProvider) GetValue(key string) (*string, error) {
+func (m *mockDefaultValueProvider) GetValue(key string) (string, error) {
 	if m.err != nil {
-		return nil, m.err
+		return "", m.err
 	}
 	if val, ok := m.values[key]; ok {
-		return &val, nil
+		return val, nil
 	}
-	return nil, nil
+	return "", nil
 }
 
 func Test_commandDescriptor_UnmarshalFlagValues_uses_default_value_provider(t *testing.T) {
@@ -82,7 +82,7 @@ func Test_reflectCobraXFlag_parses_setting_key_tag(t *testing.T) {
 	type testStruct struct {
 		MyField string `cobra-x:"my-flag, setting-key=my-setting"`
 	}
-	structType := reflect.TypeOf(testStruct{})
+	structType := reflect.TypeFor[testStruct]()
 	field, _ := structType.FieldByName("MyField")
 
 	// Act

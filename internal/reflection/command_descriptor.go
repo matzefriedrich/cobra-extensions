@@ -115,8 +115,8 @@ func (d *commandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
 		flagName := f.name
 		if !flags.Changed(flagName) && f.settingKey != "" && d.defaultValueProvider != nil {
 			val, err := d.defaultValueProvider.GetValue(f.settingKey)
-			if err == nil && val != nil {
-				_ = f.SetValueFromText(*val)
+			if err == nil && val != "" {
+				_ = f.SetValueFromText(val)
 				continue
 			}
 		}
