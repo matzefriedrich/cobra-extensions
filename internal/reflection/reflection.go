@@ -89,6 +89,10 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 					tag, _ = reflectLegacyFlag(field)
 				}
 
+				if tag == nil {
+					continue
+				}
+
 				fieldTypeKind := fieldType.Kind()
 				elementKind := reflect.Invalid
 				if fieldTypeKind == reflect.Slice {
@@ -98,6 +102,9 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescrip
 				desc := NewFlagDescriptor(tag.Name, tag.Shorthand, tag.Usage, fieldTypeKind, elementKind, fieldValue)
 				if tag.DefaultValue != "" && fieldValue.IsZero() {
 					_ = desc.SetValueFromText(tag.DefaultValue)
+				}
+				if tag.SettingKey != "" {
+					desc = desc.WithSettingKey(tag.SettingKey)
 				}
 				flags = append(flags, desc)
 			}

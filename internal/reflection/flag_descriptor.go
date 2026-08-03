@@ -17,6 +17,7 @@ const (
 type FlagDescriptor struct {
 	name        string
 	shorthand   string
+	settingKey  string
 	kind        reflect.Kind
 	elementKind reflect.Kind
 	value       reflect.Value
@@ -48,6 +49,12 @@ func NewFlagDescriptor(name string, shorthand string, usage string, t reflect.Ki
 		elementKind: et,
 		value:       v,
 	}
+}
+
+// WithSettingKey sets the setting-key for the flag.
+func (d FlagDescriptor) WithSettingKey(key string) FlagDescriptor {
+	d.settingKey = key
+	return d
 }
 
 // SetValue sets the value of a flag based on its type (string, int64, or bool) and returns an error if the type is unsupported.

@@ -10,7 +10,8 @@ import (
 
 // CommandLineApplication Represents a command-line application using the Cobra library for command parsing.
 type CommandLineApplication struct {
-	root *cobra.Command
+	root                 *cobra.Command
+	defaultValueProvider types.DefaultValueProvider
 }
 
 // NewRootCommand Creates a new cobra.Command object to be used as the application root command.
@@ -37,10 +38,18 @@ func NewCommandLineApplication(name string, description string) *CommandLineAppl
 // Execute executes the root command of the CommandLineApplication.
 func (a *CommandLineApplication) Execute(ctx context.Context) error {
 	if ctx == nil {
-		return a.root.Execute()
-	} else {
-		return a.root.ExecuteContext(ctx)
+		ctx = context.Background()
 	}
+	if a.defaultValueProvider != nil {
+		ctx = context.WithValue(ctx, types.DefaultValueProviderKey, a.defaultValueProvider)
+	}
+	return a.root.ExecuteContext(ctx)
+}
+
+// WithDefaultValueProvider sets the DefaultValueProvider for the CommandLineApplication.
+func (a *CommandLineApplication) WithDefaultValueProvider(provider types.DefaultValueProvider) *CommandLineApplication {
+	a.defaultValueProvider = provider
+	return a
 }
 
 // AddCommand Adds one or more commands to the root command of the CommandLineApplication.

@@ -11,6 +11,9 @@ type CommandDescriptor interface {
 	UnmarshalArgumentValues(args ...string)
 	BindArguments(cmd *cobra.Command)
 	BindFlags(cmd *cobra.Command)
+
+	// SetDefaultValueProvider sets the provider used to retrieve default values for command flags.
+	SetDefaultValueProvider(provider DefaultValueProvider)
 }
 
 // CommandReflector Reflects metadata of a command handler to create a CommandDescriptor.
@@ -47,3 +50,18 @@ type CommandSetup interface {
 	// AddGroupCommand adds a sub-command to the current command and calls the setup function for additional configuration.
 	AddGroupCommand(c *cobra.Command, setup CommandsSetupFunc) CommandSetup
 }
+
+// DefaultValueProvider provides a mechanism to retrieve default values for command flags from an external source.
+type DefaultValueProvider interface {
+
+	// GetValue retrieves the value associated with the specified key.
+	// It returns the value if found, or an empty string if not found.
+	// An error is returned if the retrieval process fails.
+	GetValue(key string) (string, error)
+}
+
+type contextKey string
+
+const (
+	DefaultValueProviderKey contextKey = "cobra-x-default-value-provider"
+)

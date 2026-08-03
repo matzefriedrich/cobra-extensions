@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-08-03
+
+### Added
+
+* Support for `DefaultValueProvider` interface to allow reading flag values from external sources (e.g., environment variables, vault, etc.) when a `setting-key` is specified in the `cobra-x` tag. [#30](https://github.com/matzefriedrich/cobra-extensions/pull/30)
+* Built-in `EnvironmentVariableDefaultValueProvider` that maps `setting-key` expressions to environment variables (e.g., `service.endpoint` to `MY_APP_SERVICE_ENDPOINT`). [#30](https://github.com/matzefriedrich/cobra-extensions/pull/30)
+* Built-in `YamlDefaultValueProvider` that reads flag values from a YAML source, supporting nested keys, parent paths, and flexible source configuration (raw YAML or file). [#30](https://github.com/matzefriedrich/cobra-extensions/pull/30)
+
+
 ## [0.7.0] - 2026-07-29
 
 ### Added

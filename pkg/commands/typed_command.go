@@ -36,6 +36,9 @@ func CreateTypedCommand[T types.TypedCommand](instance T, options ...func() Comm
 				descriptor: desc,
 			}
 			ctx := cmd.Context()
+			if provider, ok := ctx.Value(types.DefaultValueProviderKey).(types.DefaultValueProvider); ok {
+				desc.SetDefaultValueProvider(provider)
+			}
 			contextValue.run(ctx, cmd, args...)
 		},
 	}
