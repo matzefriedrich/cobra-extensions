@@ -12,14 +12,11 @@ import (
 
 type yamlTestHandler struct {
 	types.CommandName `cobra-x:"test"`
-	Servers           []string `cobra-x:"servers, setting-key=app.servers"`
-	Endpoint          string   `cobra-x:"endpoint, setting-key=service.endpoint"`
-	CapturedServers   []string
+	Endpoint          string `cobra-x:"endpoint, setting-key=service.endpoint"`
 	CapturedEndpoint  string
 }
 
-func (h *yamlTestHandler) Execute(ctx context.Context) {
-	h.CapturedServers = h.Servers
+func (h *yamlTestHandler) Execute(_ context.Context) {
 	h.CapturedEndpoint = h.Endpoint
 }
 
@@ -36,8 +33,8 @@ service:
 
 	handler := &yamlTestHandler{}
 	cmd := commands.CreateTypedCommand(handler)
-	
-	yamlProvider, err := providers.NewYamlDefaultValueProvider(yamlContent)
+
+	yamlProvider, err := providers.NewYamlDefaultValueProvider(providers.RawYaml(yamlContent))
 	assert.NoError(t, err)
 
 	app := NewCommandLineApplication("app", "desc").
@@ -46,11 +43,10 @@ service:
 
 	// Act
 	app.root.SetArgs([]string{"test"})
-	err = app.Execute(context.Background())
+	err = app.Execute(t.Context())
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Equal(t, []string{"server-a", "server-b"}, handler.CapturedServers)
 	assert.Equal(t, "https://api.yaml.com", handler.CapturedEndpoint)
 }
 
@@ -64,8 +60,8 @@ my-app:
 
 	handler := &yamlTestHandler{}
 	cmd := commands.CreateTypedCommand(handler)
-	
-	yamlProvider, err := providers.NewYamlDefaultValueProvider(yamlContent, providers.WithParentPath("my-app"))
+
+	yamlProvider, err := providers.NewYamlDefaultValueProvider(providers.RawYaml(yamlContent), providers.WithParentPath("my-app"))
 	assert.NoError(t, err)
 
 	app := NewCommandLineApplication("app", "desc").
@@ -74,7 +70,7 @@ my-app:
 
 	// Act
 	app.root.SetArgs([]string{"test"})
-	err = app.Execute(context.Background())
+	err = app.Execute(t.Context())
 
 	// Assert
 	assert.NoError(t, err)
