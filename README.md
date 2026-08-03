@@ -18,6 +18,18 @@ This approach encourages clean separation of concerns, easier testability, and b
 If you're okay with that, this package will save you time, and your CLI codebase will thank you.
 
 
+## Features
+
+- **Struct-based commands** - define commands and flags as annotated Go struct fields instead of writing manual boilerplate.
+- **Typed command handlers** - implement a simple `Execute(ctx)` method instead of wiring up `cobra.Command.Run` by hand.
+- **Command grouping** - organize sub-commands hierarchically via a declarative setup function.
+- **Command inheritance** - define base commands and flags once, and reuse them across commands to avoid duplicate definitions.
+- **Positional arguments** - bind unnamed command-line values to struct fields alongside regular flags.
+- **Slice-valued flags** - map flags specified multiple times on the command line to slice fields (`[]string`, `[]int`, `[]int64`, `[]bool`).
+- **Markdown documentation generation** - generate Markdown docs for all registered commands and subcommands via `NewMarkdownCommand`.
+- **Default value providers** - let flags fall back to values from environment variables, YAML files, or any custom source (e.g., a vault backend) when not set on the command line.
+
+
 ## Usage
 
 Using the Cobra extensions is a no-brainer. Use, `go get` to install the latest version of the library.
@@ -87,6 +99,13 @@ The `cobra-x` tag supports:
 See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for complete usage examples.
 
 
+## Default value providers
+
+Since version `v0.8.0`, flags can automatically receive their values from an external configuration source (environment variables, YAML files, or a custom backend like a vault service) whenever they are not explicitly set on the command line. A flag opts in via the `setting-key` attribute on its `cobra-x` tag, and a `DefaultValueProvider` is injected into the application to resolve values, with the command line always taking precedence.
+
+See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for the full list of built-in providers and usage examples.
+
+
 ## Design Philosophy
 
 Cobra gives you flexibility - and with it, a lot of responsibility. You're on your own when it comes to structuring CLIs, managing shared configuration, or avoiding boilerplate; the `cobra-extensions` package takes a more opinionated stance:
@@ -103,4 +122,4 @@ Cobra gives you flexibility - and with it, a lot of responsibility. You're on yo
 
 ---
 
-Copyright 2023 - 2025 by Matthias Friedrich
+Copyright 2023 - 2026 by Matthias Friedrich
