@@ -143,6 +143,7 @@ func Test_FlagDescriptor_set_value_from_text_returns_error_for_invalid_text(t *t
 		{name: "invalid int slice element", kind: reflect.Slice, elemKind: reflect.Int, target: reflect.ValueOf(&siValue).Elem(), text: "1,not-an-int"},
 		{name: "invalid int64 slice element", kind: reflect.Slice, elemKind: reflect.Int64, target: reflect.ValueOf(&si64Value).Elem(), text: "3,not-an-int64"},
 		{name: "invalid bool slice element", kind: reflect.Slice, elemKind: reflect.Bool, target: reflect.ValueOf(&sbValue).Elem(), text: "true,not-a-bool"},
+		{name: "unsupported slice element type", kind: reflect.Slice, elemKind: reflect.Float64, target: reflect.ValueOf(&siValue).Elem(), text: "1.23"},
 		{name: "unsupported type", kind: reflect.Float64, elemKind: reflect.Invalid, target: reflect.Value{}, text: "1.23"},
 	}
 
