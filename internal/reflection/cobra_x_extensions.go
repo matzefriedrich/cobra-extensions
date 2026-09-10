@@ -60,24 +60,17 @@ func reflectCobraXCommand(field reflect.StructField) (*CobraXCommandTag, error) 
 }
 
 func reflectCobraXFlag(field reflect.StructField) (*CobraXFlagTag, error) {
-	cobraX := field.Tag.Get(cobraXTag)
-	if cobraX == "" {
+	cobraXTagValue := field.Tag.Get(cobraXTag)
+	if cobraXTagValue == "" {
 		return nil, types.NewCobraXError(ErrorCobraXTagNotFound)
 	}
-	var name, shorthand, usageOrDescription, defaultValue string
-	nameExpr, attributes := parseCobraX(cobraX)
+	var name, shorthand, usage, defaultValue string
+	nameExpr, attributes := parseCobraX(cobraXTagValue)
 	if nameExpr != "" {
 		name, shorthand = parseFlagNameExpression(nameExpr)
 	}
 
-	usageOrDescription = attributes[cobraXHelpTag]
-	if usageOrDescription == "" {
-		usageOrDescription = attributes[cobraXDescriptionTag]
-	}
-	if usageOrDescription == "" {
-		usageOrDescription = attributes[cobraXUsageTag]
-	}
-
+	usage = resolveFlagUsage(attributes)
 	defaultValue = attributes[cobraXDefaultValueTag]
 	settingKey := attributes[cobraXSettingKeyTag]
 
@@ -85,8 +78,19 @@ func reflectCobraXFlag(field reflect.StructField) (*CobraXFlagTag, error) {
 		CobraXTag:    CobraXTag{Attributes: attributes},
 		Name:         name,
 		Shorthand:    shorthand,
-		Usage:        usageOrDescription,
+		Usage:        usage,
 		DefaultValue: defaultValue,
 		SettingKey:   settingKey,
 	}, nil
+}
+
+func resolveFlagUsage(attributes map[string]string) string {
+	usage := attributes[cobraXHelpTag]
+	if usage == "" {
+		usage = attributes[cobraXDescriptionTag]
+	}
+	if usage == "" {
+		usage = attributes[cobraXUsageTag]
+	}
+	return usage
 }

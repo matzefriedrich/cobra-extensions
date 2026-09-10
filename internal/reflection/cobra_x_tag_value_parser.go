@@ -66,16 +66,16 @@ func parseAttribute(part string) (string, string, bool) {
 }
 
 // parseFlagNameExpression parses a flag name expression (e.g., "name|-n" or "--name|-n").
-func parseFlagNameExpression(s string) (name string, shortHand string) {
-	parts := strings.Split(s, "|")
+func parseFlagNameExpression(expression string) (name string, shortHand string) {
+	parts := strings.Split(expression, "|")
 	name = ""
 	shortHand = ""
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
-		if after, ok := strings.CutPrefix(part, "--"); ok {
-			name = after
-		} else if after0, ok0 := strings.CutPrefix(part, "-"); ok0 {
-			shortHand = after0
+		if longName, ok := strings.CutPrefix(part, "--"); ok {
+			name = longName
+		} else if shortName, ok := strings.CutPrefix(part, "-"); ok {
+			shortHand = shortName
 		} else {
 			if name == "" {
 				name = part

@@ -15,8 +15,8 @@ type ReflectedField struct {
 }
 
 // ReflectObject takes an interface and returns a reference to a ReflectedObject, containing reflection info about the instance.
-func ReflectObject(n interface{}) *ReflectedObject {
-	value := reflect.ValueOf(n)
+func ReflectObject(target interface{}) *ReflectedObject {
+	value := reflect.ValueOf(target)
 	if value.Kind() == reflect.Pointer {
 		value = value.Elem()
 	}
@@ -33,7 +33,7 @@ func (m *ReflectedObject) Kind() reflect.Kind {
 type FieldEnumeratorCallback func(index int, field ReflectedField)
 
 // EnumerateFields iterates over each field of the underlying struct, invoking the provided callback for each field.
-func (m *ReflectedObject) EnumerateFields(iterFunc FieldEnumeratorCallback) {
+func (m *ReflectedObject) EnumerateFields(callback FieldEnumeratorCallback) {
 	if m.Kind() != reflect.Struct {
 		return
 	}
@@ -42,7 +42,7 @@ func (m *ReflectedObject) EnumerateFields(iterFunc FieldEnumeratorCallback) {
 		structField := m.objectType.Field(i)
 		structFieldValue := m.instanceValue.Field(i)
 		field := ReflectedField{field: structField, value: structFieldValue}
-		iterFunc(i, field)
+		callback(i, field)
 	}
 }
 
@@ -50,8 +50,8 @@ func (f *ReflectedField) typeKind() reflect.Kind {
 	return f.field.Type.Kind()
 }
 
-func (f *ReflectedField) isType(t any) bool {
-	return f.field.Type == reflect.TypeOf(t)
+func (f *ReflectedField) isType(target any) bool {
+	return f.field.Type == reflect.TypeOf(target)
 }
 
 func (f *ReflectedField) getInterfaceValue() interface{} {

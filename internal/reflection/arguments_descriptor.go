@@ -22,27 +22,31 @@ func (d *argumentsDescriptor) BindArguments(target *cobra.Command) {
 
 // BindArgumentValues Sets the given set of values to positional argument fields.
 func (d *argumentsDescriptor) BindArgumentValues(args ...string) {
-	for _, a := range d.args {
-		index := a.argumentIndex
-		if index < len(args) {
-			value := args[index]
-			switch a.typeKind {
-			case reflect.String:
-				a.SetString(value)
-			case reflect.Int64:
-				n, err := strconv.ParseInt(value, 10, 64)
-				if err == nil {
-					a.SetInt64(n)
-				}
-			case reflect.Bool:
-				b, err := strconv.ParseBool(value)
-				if err == nil {
-					a.SetBool(b)
-				}
-			default:
-				panic("unsupported type")
-			}
+	for _, argument := range d.args {
+		if argument.argumentIndex >= len(args) {
+			continue
 		}
+		value := args[argument.argumentIndex]
+		argument.bindValue(value)
+	}
+}
+
+func (a *ArgumentDescriptor) bindValue(value string) {
+	switch a.typeKind {
+	case reflect.String:
+		a.SetString(value)
+	case reflect.Int64:
+		number, err := strconv.ParseInt(value, 10, 64)
+		if err == nil {
+			a.SetInt64(number)
+		}
+	case reflect.Bool:
+		boolean, err := strconv.ParseBool(value)
+		if err == nil {
+			a.SetBool(boolean)
+		}
+	default:
+		panic("unsupported type")
 	}
 }
 
