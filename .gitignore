@@ -13,3 +13,5 @@ bin/
 
 # Coverage
 coverage.*
+covprofile
+goveralls-report.json
