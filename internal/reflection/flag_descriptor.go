@@ -40,14 +40,14 @@ func (d *FlagDescriptor) AsBool() bool {
 }
 
 // NewFlagDescriptor creates a new FlagDescriptor given the flag's name, shorthand, usage description, type, and initial value.
-func NewFlagDescriptor(name string, shorthand string, usage string, t reflect.Kind, et reflect.Kind, v reflect.Value) FlagDescriptor {
+func NewFlagDescriptor(name string, shorthand string, usage string, kind reflect.Kind, elementKind reflect.Kind, value reflect.Value) FlagDescriptor {
 	return FlagDescriptor{
 		name:        name,
 		shorthand:   shorthand,
 		usage:       usage,
-		kind:        t,
-		elementKind: et,
-		value:       v,
+		kind:        kind,
+		elementKind: elementKind,
+		value:       value,
 	}
 }
 
@@ -61,36 +61,52 @@ func (d FlagDescriptor) WithSettingKey(key string) FlagDescriptor {
 func (d *FlagDescriptor) SetValue(value interface{}) error {
 	switch d.kind {
 	case reflect.String:
-		s, ok := value.(string)
-		if ok {
-			d.value.SetString(s)
-			return nil
-		}
-		return invalidValueError()
+		return d.setStringValue(value)
 	case reflect.Int, reflect.Int64:
-		n, ok := value.(int64)
-		if ok {
-			d.value.SetInt(n)
-			return nil
-		}
-		return invalidValueError()
+		return d.setInt64Value(value)
 	case reflect.Bool:
-		b, ok := value.(bool)
-		if ok {
-			d.value.SetBool(b)
-			return nil
-		}
-		return invalidValueError()
+		return d.setBoolValue(value)
 	case reflect.Slice:
-		v := reflect.ValueOf(value)
-		if v.Kind() == reflect.Slice {
-			d.value.Set(v)
-			return nil
-		}
-		return invalidValueError()
+		return d.setSliceValue(value)
 	}
 
 	return errors.New(ErrorFlagTypeNotSupported)
+}
+
+func (d *FlagDescriptor) setStringValue(value interface{}) error {
+	text, ok := value.(string)
+	if !ok {
+		return invalidValueError()
+	}
+	d.value.SetString(text)
+	return nil
+}
+
+func (d *FlagDescriptor) setInt64Value(value interface{}) error {
+	number, ok := value.(int64)
+	if !ok {
+		return invalidValueError()
+	}
+	d.value.SetInt(number)
+	return nil
+}
+
+func (d *FlagDescriptor) setBoolValue(value interface{}) error {
+	boolean, ok := value.(bool)
+	if !ok {
+		return invalidValueError()
+	}
+	d.value.SetBool(boolean)
+	return nil
+}
+
+func (d *FlagDescriptor) setSliceValue(value interface{}) error {
+	reflectedValue := reflect.ValueOf(value)
+	if reflectedValue.Kind() != reflect.Slice {
+		return invalidValueError()
+	}
+	d.value.Set(reflectedValue)
+	return nil
 }
 
 // SetValueFromText sets the flag's value from its string representation.
@@ -99,21 +115,29 @@ func (d *FlagDescriptor) SetValueFromText(text string) error {
 	case reflect.String:
 		return d.SetValue(text)
 	case reflect.Int, reflect.Int64:
-		value, err := strconv.ParseInt(text, 10, 64)
-		if err != nil {
-			return err
-		}
-		return d.SetValue(value)
+		return d.setTextAsInt64(text)
 	case reflect.Bool:
-		value, err := strconv.ParseBool(text)
-		if err != nil {
-			return err
-		}
-		return d.SetValue(value)
+		return d.setTextAsBool(text)
 	case reflect.Slice:
 		return d.setSliceValueFromText(text)
 	}
 	return fmt.Errorf("unsupported flag type: %v", d.kind)
+}
+
+func (d *FlagDescriptor) setTextAsInt64(text string) error {
+	value, err := strconv.ParseInt(text, 10, 64)
+	if err != nil {
+		return err
+	}
+	return d.SetValue(value)
+}
+
+func (d *FlagDescriptor) setTextAsBool(text string) error {
+	value, err := strconv.ParseBool(text)
+	if err != nil {
+		return err
+	}
+	return d.SetValue(value)
 }
 
 func (d *FlagDescriptor) setSliceValueFromText(text string) error {
@@ -122,58 +146,58 @@ func (d *FlagDescriptor) setSliceValueFromText(text string) error {
 	case reflect.String:
 		return d.SetValue(parts)
 	case reflect.Int:
-		values, err := parseIntSlice(parts)
-		if err != nil {
-			return err
-		}
-		return d.SetValue(values)
+		return d.setIntsFromParts(parts)
 	case reflect.Int64:
-		values, err := parseInt64Slice(parts)
-		if err != nil {
-			return err
-		}
-		return d.SetValue(values)
+		return d.setInt64sFromParts(parts)
 	case reflect.Bool:
-		values, err := parseBoolSlice(parts)
-		if err != nil {
-			return err
-		}
-		return d.SetValue(values)
+		return d.setBoolsFromParts(parts)
 	}
 	return fmt.Errorf("unsupported flag type: %v", d.kind)
 }
 
-func parseIntSlice(parts []string) ([]int, error) {
-	var values []int
-	for _, part := range parts {
-		trimmed := strings.TrimSpace(part)
-		value, err := strconv.Atoi(trimmed)
-		if err != nil {
-			return nil, err
-		}
-		values = append(values, value)
+func (d *FlagDescriptor) setIntsFromParts(parts []string) error {
+	values, err := parseIntSlice(parts)
+	if err != nil {
+		return err
 	}
-	return values, nil
+	return d.SetValue(values)
+}
+
+func (d *FlagDescriptor) setInt64sFromParts(parts []string) error {
+	values, err := parseInt64Slice(parts)
+	if err != nil {
+		return err
+	}
+	return d.SetValue(values)
+}
+
+func (d *FlagDescriptor) setBoolsFromParts(parts []string) error {
+	values, err := parseBoolSlice(parts)
+	if err != nil {
+		return err
+	}
+	return d.SetValue(values)
+}
+
+func parseIntSlice(parts []string) ([]int, error) {
+	return parseSlice(parts, strconv.Atoi)
 }
 
 func parseInt64Slice(parts []string) ([]int64, error) {
-	var values []int64
-	for _, part := range parts {
-		trimmed := strings.TrimSpace(part)
-		value, err := strconv.ParseInt(trimmed, 10, 64)
-		if err != nil {
-			return nil, err
-		}
-		values = append(values, value)
-	}
-	return values, nil
+	return parseSlice(parts, func(part string) (int64, error) {
+		return strconv.ParseInt(part, 10, 64)
+	})
 }
 
 func parseBoolSlice(parts []string) ([]bool, error) {
-	var values []bool
+	return parseSlice(parts, strconv.ParseBool)
+}
+
+func parseSlice[T any](parts []string, parse func(string) (T, error)) ([]T, error) {
+	var values []T
 	for _, part := range parts {
 		trimmed := strings.TrimSpace(part)
-		value, err := strconv.ParseBool(trimmed)
+		value, err := parse(trimmed)
 		if err != nil {
 			return nil, err
 		}

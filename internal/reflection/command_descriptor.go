@@ -5,6 +5,7 @@ import (
 
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 // CommandDescriptor represents the metadata and configuration for a command, including its use, descriptions, flags, and arguments.
@@ -35,58 +36,97 @@ func (d *commandDescriptor) BindFlags(target *cobra.Command) {
 	if target == nil {
 		return
 	}
-	for _, f := range d.flags {
-		targetFlags := target.Flags()
-		name := f.name
-		usage := f.usage
-		shorthand := f.shorthand
-		switch f.kind {
-		case reflect.String:
-			if shorthand != "" {
-				targetFlags.StringP(name, shorthand, f.AsString(), usage)
-			} else {
-				targetFlags.String(name, f.AsString(), usage)
-			}
-		case reflect.Int, reflect.Int64:
-			if shorthand != "" {
-				targetFlags.Int64P(name, shorthand, f.AsInt64(), usage)
-			} else {
-				targetFlags.Int64(name, f.AsInt64(), usage)
-			}
-		case reflect.Bool:
-			if shorthand != "" {
-				targetFlags.BoolP(name, shorthand, f.AsBool(), usage)
-			} else {
-				targetFlags.Bool(name, f.AsBool(), usage)
-			}
-		case reflect.Slice:
-			switch f.elementKind {
-			case reflect.String:
-				if shorthand != "" {
-					targetFlags.StringSliceP(name, shorthand, f.value.Interface().([]string), usage)
-				} else {
-					targetFlags.StringSlice(name, f.value.Interface().([]string), usage)
-				}
-			case reflect.Int:
-				if shorthand != "" {
-					targetFlags.IntSliceP(name, shorthand, f.value.Interface().([]int), usage)
-				} else {
-					targetFlags.IntSlice(name, f.value.Interface().([]int), usage)
-				}
-			case reflect.Int64:
-				if shorthand != "" {
-					targetFlags.Int64SliceP(name, shorthand, f.value.Interface().([]int64), usage)
-				} else {
-					targetFlags.Int64Slice(name, f.value.Interface().([]int64), usage)
-				}
-			case reflect.Bool:
-				if shorthand != "" {
-					targetFlags.BoolSliceP(name, shorthand, f.value.Interface().([]bool), usage)
-				} else {
-					targetFlags.BoolSlice(name, f.value.Interface().([]bool), usage)
-				}
-			}
-		}
+	targetFlags := target.Flags()
+	for _, flag := range d.flags {
+		bindFlag(targetFlags, flag)
+	}
+}
+
+func bindFlag(targetFlags *pflag.FlagSet, flag FlagDescriptor) {
+	flagName := flag.name
+	flagUsage := flag.usage
+	flagShorthand := flag.shorthand
+	switch flag.kind {
+	case reflect.String:
+		bindStringFlag(targetFlags, flagName, flagShorthand, flag.AsString(), flagUsage)
+	case reflect.Int, reflect.Int64:
+		bindInt64Flag(targetFlags, flagName, flagShorthand, flag.AsInt64(), flagUsage)
+	case reflect.Bool:
+		bindBoolFlag(targetFlags, flagName, flagShorthand, flag.AsBool(), flagUsage)
+	case reflect.Slice:
+		bindSliceFlag(targetFlags, flag)
+	}
+}
+
+func bindStringFlag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue string, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.StringP(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.String(flagName, defaultValue, flagUsage)
+	}
+}
+
+func bindInt64Flag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue int64, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.Int64P(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.Int64(flagName, defaultValue, flagUsage)
+	}
+}
+
+func bindBoolFlag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue bool, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.BoolP(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.Bool(flagName, defaultValue, flagUsage)
+	}
+}
+
+func bindSliceFlag(targetFlags *pflag.FlagSet, flag FlagDescriptor) {
+	flagName := flag.name
+	flagUsage := flag.usage
+	flagShorthand := flag.shorthand
+	switch flag.elementKind {
+	case reflect.String:
+		bindStringSliceFlag(targetFlags, flagName, flagShorthand, flag.value.Interface().([]string), flagUsage)
+	case reflect.Int:
+		bindIntSliceFlag(targetFlags, flagName, flagShorthand, flag.value.Interface().([]int), flagUsage)
+	case reflect.Int64:
+		bindInt64SliceFlag(targetFlags, flagName, flagShorthand, flag.value.Interface().([]int64), flagUsage)
+	case reflect.Bool:
+		bindBoolSliceFlag(targetFlags, flagName, flagShorthand, flag.value.Interface().([]bool), flagUsage)
+	}
+}
+
+func bindStringSliceFlag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue []string, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.StringSliceP(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.StringSlice(flagName, defaultValue, flagUsage)
+	}
+}
+
+func bindIntSliceFlag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue []int, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.IntSliceP(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.IntSlice(flagName, defaultValue, flagUsage)
+	}
+}
+
+func bindInt64SliceFlag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue []int64, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.Int64SliceP(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.Int64Slice(flagName, defaultValue, flagUsage)
+	}
+}
+
+func bindBoolSliceFlag(targetFlags *pflag.FlagSet, flagName string, flagShorthand string, defaultValue []bool, flagUsage string) {
+	if flagShorthand != "" {
+		targetFlags.BoolSliceP(flagName, flagShorthand, defaultValue, flagUsage)
+	} else {
+		targetFlags.BoolSlice(flagName, defaultValue, flagUsage)
 	}
 }
 
@@ -110,43 +150,60 @@ func (d *commandDescriptor) UnmarshalArgumentValues(args ...string) {
 
 // UnmarshalFlagValues populates the CommandDescriptor's flags from the provided *cobra.Command object.
 func (d *commandDescriptor) UnmarshalFlagValues(target *cobra.Command) {
-	flags := target.Flags()
-	for _, f := range d.flags {
-		flagName := f.name
-		if !flags.Changed(flagName) && f.settingKey != "" && d.defaultValueProvider != nil {
-			val, err := d.defaultValueProvider.GetValue(f.settingKey)
-			if err == nil && val != "" {
-				_ = f.SetValueFromText(val)
-				continue
-			}
+	targetFlags := target.Flags()
+	for _, flag := range d.flags {
+		if d.applyProvidedDefaultValue(targetFlags, flag) {
+			continue
 		}
+		readFlagValue(targetFlags, flag)
+	}
+}
 
-		switch f.kind {
-		case reflect.String:
-			value, _ := flags.GetString(flagName)
-			_ = f.SetValue(value)
-		case reflect.Int, reflect.Int64:
-			value, _ := flags.GetInt64(flagName)
-			_ = f.SetValue(value)
-		case reflect.Bool:
-			value, _ := flags.GetBool(flagName)
-			_ = f.SetValue(value)
-		case reflect.Slice:
-			switch f.elementKind {
-			case reflect.String:
-				value, _ := flags.GetStringSlice(flagName)
-				_ = f.SetValue(value)
-			case reflect.Int:
-				value, _ := flags.GetIntSlice(flagName)
-				_ = f.SetValue(value)
-			case reflect.Int64:
-				value, _ := flags.GetInt64Slice(flagName)
-				_ = f.SetValue(value)
-			case reflect.Bool:
-				value, _ := flags.GetBoolSlice(flagName)
-				_ = f.SetValue(value)
-			}
-		}
+func (d *commandDescriptor) applyProvidedDefaultValue(targetFlags *pflag.FlagSet, flag FlagDescriptor) bool {
+	flagName := flag.name
+	if targetFlags.Changed(flagName) || flag.settingKey == "" || d.defaultValueProvider == nil {
+		return false
+	}
+	value, err := d.defaultValueProvider.GetValue(flag.settingKey)
+	if err != nil || value == "" {
+		return false
+	}
+	_ = flag.SetValueFromText(value)
+	return true
+}
+
+func readFlagValue(targetFlags *pflag.FlagSet, flag FlagDescriptor) {
+	flagName := flag.name
+	switch flag.kind {
+	case reflect.String:
+		value, _ := targetFlags.GetString(flagName)
+		_ = flag.SetValue(value)
+	case reflect.Int, reflect.Int64:
+		value, _ := targetFlags.GetInt64(flagName)
+		_ = flag.SetValue(value)
+	case reflect.Bool:
+		value, _ := targetFlags.GetBool(flagName)
+		_ = flag.SetValue(value)
+	case reflect.Slice:
+		readSliceFlagValue(targetFlags, flag)
+	}
+}
+
+func readSliceFlagValue(targetFlags *pflag.FlagSet, flag FlagDescriptor) {
+	flagName := flag.name
+	switch flag.elementKind {
+	case reflect.String:
+		value, _ := targetFlags.GetStringSlice(flagName)
+		_ = flag.SetValue(value)
+	case reflect.Int:
+		value, _ := targetFlags.GetIntSlice(flagName)
+		_ = flag.SetValue(value)
+	case reflect.Int64:
+		value, _ := targetFlags.GetInt64Slice(flagName)
+		_ = flag.SetValue(value)
+	case reflect.Bool:
+		value, _ := targetFlags.GetBoolSlice(flagName)
+		_ = flag.SetValue(value)
 	}
 }
 

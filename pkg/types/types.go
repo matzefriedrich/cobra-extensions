@@ -18,7 +18,7 @@ type CommandDescriptor interface {
 
 // CommandReflector Reflects metadata of a command handler to create a CommandDescriptor.
 type CommandReflector[T any] interface {
-	ReflectCommandDescriptor(n T) CommandDescriptor
+	ReflectCommandDescriptor(handler T) CommandDescriptor
 }
 
 // ArgumentsDescriptorOption defines an option that can configure an ArgumentsDescriptor.

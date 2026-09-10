@@ -200,6 +200,17 @@ func Test_commandDescriptor_unmarshal_argument_values_sets_positional_arguments(
 	})
 }
 
+func Test_argumentDescriptor_argument_index_returns_configured_index(t *testing.T) {
+	// Arrange
+	descriptor := ArgumentDescriptor{argumentIndex: 3}
+
+	// Act
+	index := descriptor.ArgumentIndex()
+
+	// Assert
+	assert.Equal(t, 3, index)
+}
+
 func Test_argumentsDescriptor_bind_argument_values_panics_on_unsupported_type(t *testing.T) {
 	// Arrange
 	arg := 1.23

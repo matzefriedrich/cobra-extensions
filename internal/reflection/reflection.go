@@ -18,107 +18,155 @@ func NewCommandReflector[T any]() types.CommandReflector[T] {
 }
 
 // ReflectCommandDescriptor Reflects all metadata from a command handler and returns a new CommandDescriptor instance.
-func (r *commandReflector[T]) ReflectCommandDescriptor(n T) types.CommandDescriptor {
+func (r *commandReflector[T]) ReflectCommandDescriptor(handler T) types.CommandDescriptor {
 
-	var flags = make([]FlagDescriptor, 0)
 	arguments := NewArgumentsDescriptorWith()
 
-	value := reflect.ValueOf(n)
-	if value.Kind() == reflect.Pointer {
-		value = value.Elem()
-	}
-
-	valueType := reflect.TypeOf(value.Interface())
-	valueTypeName := valueType.Name()
-	use := utils.ExtractCommandUse(valueTypeName)
-	shortHelpText := ""
-	longHelpText := ""
+	value, valueType := resolveRootObject(handler)
+	commandMetadata := extractCommandMetadataUse(valueType.Name())
 
 	stack := utils.MakeStack[valueItem]()
 	stack.Push(valueItem{value: value, valueType: valueType})
+
+	flags := r.traverseFields(stack, commandMetadata, arguments)
+
+	return NewCommandDescriptor(commandMetadata.use, commandMetadata.shortHelpText, commandMetadata.longHelpText, flags, arguments)
+}
+
+func (r *commandReflector[T]) traverseFields(stack utils.Stack[valueItem], commandMetadata *commandMetadata, arguments types.ArgumentsDescriptor) []FlagDescriptor {
+	flags := make([]FlagDescriptor, 0)
 
 	for !stack.IsEmpty() {
 
 		next := stack.Pop()
 
-		numFields := next.value.NumField()
-		for i := range numFields {
+		for i := range next.value.NumField() {
 
 			field := next.valueType.Field(i)
-			isExportedField := field.PkgPath == ""
 
-			fieldType := field.Type
-			//nolint:staticcheck // required for legacy functionality
-			if fieldType == reflect.TypeFor[types.CommandName]() || reflect.TypeFor[types.BaseCommand]() == fieldType {
-				tag, tagErr := reflectCobraXCommand(field)
-				if tagErr != nil && errors.Is(tagErr, ErrCobraXCommandNotFound) {
-					tag, tagErr = reflectLegacyCommand(field)
-					if tagErr != nil && errors.Is(tagErr, ErrCobraXLegacyTagsNotFound) {
-						continue
-					}
-				}
-				if tag != nil {
-					use = ternary.ValueOrDefault(tag.Use, ternary.NotNilOrWhitespace, use)
-					shortHelpText = ternary.ValueOrDefault(tag.Help, ternary.NotNilOrWhitespace, shortHelpText)
-					longHelpText = ternary.ValueOrDefault(tag.Description, ternary.NotNilOrWhitespace, longHelpText)
-				}
-				//nolint:staticcheck // required for legacy functionality
-				if fieldType == reflect.TypeFor[types.CommandName]() {
-					continue
-				}
+			if shouldSkipCommandField(field.Type, field, commandMetadata) {
+				continue
 			}
 
 			fieldValue := next.value.Field(i)
 
-			m := ReflectedObject{instanceValue: fieldValue, objectType: fieldType}
-			if tryReflectArgumentsDescriptor(m, arguments) {
+			if reflectArgumentsDescriptor(field.Type, fieldValue, arguments) {
 				continue
 			}
 
-			isEmbeddedField := field.Anonymous
-			if isEmbeddedField {
-				embeddedValue := fieldValue
-				embeddedType := fieldType
-				stack.Push(valueItem{value: embeddedValue, valueType: embeddedType})
+			if field.Anonymous {
+				stack.Push(valueItem{value: fieldValue, valueType: field.Type})
 				continue
 			}
 
-			if isExportedField {
-				tag, tagErr := reflectCobraXFlag(field)
-				if tagErr != nil {
-					tag, _ = reflectLegacyFlag(field)
+			if field.PkgPath == "" {
+				flagDescriptor, ok := reflectFlagDescriptor(field, fieldValue)
+				if ok {
+					flags = append(flags, flagDescriptor)
 				}
-
-				if tag == nil {
-					continue
-				}
-
-				fieldTypeKind := fieldType.Kind()
-				elementKind := reflect.Invalid
-				if fieldTypeKind == reflect.Slice {
-					elementKind = fieldType.Elem().Kind()
-				}
-
-				desc := NewFlagDescriptor(tag.Name, tag.Shorthand, tag.Usage, fieldTypeKind, elementKind, fieldValue)
-				if tag.DefaultValue != "" && fieldValue.IsZero() {
-					_ = desc.SetValueFromText(tag.DefaultValue)
-				}
-				if tag.SettingKey != "" {
-					desc = desc.WithSettingKey(tag.SettingKey)
-				}
-				flags = append(flags, desc)
 			}
 		}
 	}
 
-	return NewCommandDescriptor(use, shortHelpText, longHelpText, flags, arguments)
+	return flags
 }
 
-func tryReflectArgumentsDescriptor(m ReflectedObject, target types.ArgumentsDescriptor) bool {
+func resolveRootObject[T any](handler T) (reflect.Value, reflect.Type) {
+	value := reflect.ValueOf(handler)
+	if value.Kind() == reflect.Pointer {
+		value = value.Elem()
+	}
+	valueType := reflect.TypeOf(value.Interface())
+	return value, valueType
+}
 
+func extractCommandMetadataUse(valueTypeName string) *commandMetadata {
+	return &commandMetadata{
+		use: utils.ExtractCommandUse(valueTypeName),
+	}
+}
+
+type commandMetadata struct {
+	use           string
+	shortHelpText string
+	longHelpText  string
+}
+
+func (m *commandMetadata) Update(tag *CobraXCommandTag) {
+	m.use = ternary.ValueOrDefault(tag.Use, ternary.NotNilOrWhitespace, m.use)
+	m.shortHelpText = ternary.ValueOrDefault(tag.Help, ternary.NotNilOrWhitespace, m.shortHelpText)
+	m.longHelpText = ternary.ValueOrDefault(tag.Description, ternary.NotNilOrWhitespace, m.longHelpText)
+}
+
+func isCommandFieldType(fieldType reflect.Type) bool {
+	//nolint:staticcheck // required for legacy functionality
+	return fieldType == reflect.TypeFor[types.CommandName]() || reflect.TypeFor[types.BaseCommand]() == fieldType
+}
+
+func isCommandNameFieldType(fieldType reflect.Type) bool {
+	//nolint:staticcheck // required for legacy functionality
+	return fieldType == reflect.TypeFor[types.CommandName]()
+}
+
+// shouldSkipCommandField resolves the command tag for command-type fields, applies it to the metadata,
+// and reports whether the field should be skipped during reflection.
+func shouldSkipCommandField(fieldType reflect.Type, field reflect.StructField, metadata *commandMetadata) bool {
+	if !isCommandFieldType(fieldType) {
+		return false
+	}
+	commandTag, skipField := resolveCommandTag(field)
+	if skipField {
+		return true
+	}
+	if commandTag != nil {
+		metadata.Update(commandTag)
+	}
+	return isCommandNameFieldType(fieldType)
+}
+
+// resolveCommandTag resolves the command tag using the cobra-x convention and falls back to the legacy convention.
+// skipField indicates that neither convention applies and the field should be ignored.
+func resolveCommandTag(field reflect.StructField) (commandTag *CobraXCommandTag, skipField bool) {
+	tag, tagErr := reflectCobraXCommand(field)
+	if tagErr != nil && errors.Is(tagErr, ErrCobraXCommandNotFound) {
+		tag, tagErr = reflectLegacyCommand(field)
+		if tagErr != nil && errors.Is(tagErr, ErrCobraXLegacyTagsNotFound) {
+			return nil, true
+		}
+	}
+	return tag, false
+}
+
+func reflectFlagDescriptor(field reflect.StructField, fieldValue reflect.Value) (FlagDescriptor, bool) {
+	tag, tagErr := reflectCobraXFlag(field)
+	if tagErr != nil {
+		tag, _ = reflectLegacyFlag(field)
+	}
+
+	if tag == nil {
+		return FlagDescriptor{}, false
+	}
+
+	fieldTypeKind := field.Type.Kind()
+	elementKind := reflect.Invalid
+	if fieldTypeKind == reflect.Slice {
+		elementKind = field.Type.Elem().Kind()
+	}
+
+	descriptor := NewFlagDescriptor(tag.Name, tag.Shorthand, tag.Usage, fieldTypeKind, elementKind, fieldValue)
+	if tag.DefaultValue != "" && fieldValue.IsZero() {
+		_ = descriptor.SetValueFromText(tag.DefaultValue)
+	}
+	if tag.SettingKey != "" {
+		descriptor = descriptor.WithSettingKey(tag.SettingKey)
+	}
+	return descriptor, true
+}
+
+func reflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, arguments types.ArgumentsDescriptor) bool {
 	hasCommandArgs := false
-
-	m.EnumerateFields(func(index int, field ReflectedField) {
+	reflectedObject := ReflectedObject{instanceValue: fieldValue, objectType: fieldType}
+	reflectedObject.EnumerateFields(func(index int, field ReflectedField) {
 		fieldTypeKind := field.typeKind()
 		switch fieldTypeKind {
 		case reflect.String:
@@ -128,19 +176,18 @@ func tryReflectArgumentsDescriptor(m ReflectedObject, target types.ArgumentsDesc
 		case reflect.Bool:
 			if hasCommandArgs {
 				descriptor := ArgumentDescriptor{typeKind: fieldTypeKind, value: field.value, argumentIndex: index - 1}
-				target.With(Args(descriptor))
+				arguments.With(Args(descriptor))
 			}
 		case reflect.Interface:
 		case reflect.Struct:
 			if field.isType(types.CommandArgs{}) {
 				compatible, ok := field.getInterfaceValue().(types.CommandArgs)
 				if ok {
-					target.With(MinimumArgs(compatible.MinimumArgs))
+					arguments.With(MinimumArgs(compatible.MinimumArgs))
 					hasCommandArgs = true
 				}
 			}
 		}
 	})
-
 	return hasCommandArgs
 }
