@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+
+## [0.9.0] - 2026-09-10
+
 ### Changed
 
 * Bumps `github.com/stretchr/testify` from 1.11.1 to 1.12.1 [#32](https://github.com/matzefriedrich/cobra-extensions/pull/32)
 * Decomposes `FlagDescriptor.SetValueFromText` into smaller parsing helpers to reduce complexity; adds characterization tests raising its coverage [#33](https://github.com/matzefriedrich/cobra-extensions/pull/33)
 * Decomposes large functions in `internal/reflection` (`ReflectCommandDescriptor`, `BindFlags`, `UnmarshalFlagValues`, flag value setters) into smaller per-kind helpers to reduce complexity; adds behavior-level characterization tests raising package coverage [#34](https://github.com/matzefriedrich/cobra-extensions/pull/34)
+* Bumps the target Go version from 1.26.4 to 1.27; promotes `github.com/spf13/pflag` from an indirect to a direct dependency (the reflection package now consumes the pflag API directly) [#35](https://github.com/matzefriedrich/cobra-extensions/pull/35)
 
 
 ## [0.8.0] - 2026-08-03
