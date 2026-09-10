@@ -1,6 +1,6 @@
 .PHONY: all install-lint lint lint-fix clean
 
-LINT_VERSION := v2.12.2
+LINT_VERSION := v2.13.2
 BIN_DIR := $(CURDIR)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
