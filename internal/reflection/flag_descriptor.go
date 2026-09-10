@@ -99,55 +99,87 @@ func (d *FlagDescriptor) SetValueFromText(text string) error {
 	case reflect.String:
 		return d.SetValue(text)
 	case reflect.Int, reflect.Int64:
-		val, err := strconv.ParseInt(text, 10, 64)
+		value, err := strconv.ParseInt(text, 10, 64)
 		if err != nil {
 			return err
 		}
-		return d.SetValue(val)
+		return d.SetValue(value)
 	case reflect.Bool:
-		val, err := strconv.ParseBool(text)
+		value, err := strconv.ParseBool(text)
 		if err != nil {
 			return err
 		}
-		return d.SetValue(val)
+		return d.SetValue(value)
 	case reflect.Slice:
-		parts := strings.Split(text, ",")
-		switch d.elementKind {
-		case reflect.String:
-			return d.SetValue(parts)
-		case reflect.Int:
-			intParts := make([]int, len(parts))
-			for i, p := range parts {
-				v, err := strconv.Atoi(strings.TrimSpace(p))
-				if err != nil {
-					return err
-				}
-				intParts[i] = v
-			}
-			return d.SetValue(intParts)
-		case reflect.Int64:
-			intParts := make([]int64, len(parts))
-			for i, p := range parts {
-				v, err := strconv.ParseInt(strings.TrimSpace(p), 10, 64)
-				if err != nil {
-					return err
-				}
-				intParts[i] = v
-			}
-			return d.SetValue(intParts)
-		case reflect.Bool:
-			boolParts := make([]bool, len(parts))
-			for i, p := range parts {
-				v, err := strconv.ParseBool(strings.TrimSpace(p))
-				if err != nil {
-					return err
-				}
-				boolParts[i] = v
-			}
-			return d.SetValue(boolParts)
-		}
+		return d.setSliceValueFromText(text)
 	}
 	return fmt.Errorf("unsupported flag type: %v", d.kind)
+}
+
+func (d *FlagDescriptor) setSliceValueFromText(text string) error {
+	parts := strings.Split(text, ",")
+	switch d.elementKind {
+	case reflect.String:
+		return d.SetValue(parts)
+	case reflect.Int:
+		values, err := parseIntSlice(parts)
+		if err != nil {
+			return err
+		}
+		return d.SetValue(values)
+	case reflect.Int64:
+		values, err := parseInt64Slice(parts)
+		if err != nil {
+			return err
+		}
+		return d.SetValue(values)
+	case reflect.Bool:
+		values, err := parseBoolSlice(parts)
+		if err != nil {
+			return err
+		}
+		return d.SetValue(values)
+	}
+	return fmt.Errorf("unsupported flag type: %v", d.kind)
+}
+
+func parseIntSlice(parts []string) ([]int, error) {
+	var values []int
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		value, err := strconv.Atoi(trimmed)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
+}
+
+func parseInt64Slice(parts []string) ([]int64, error) {
+	var values []int64
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		value, err := strconv.ParseInt(trimmed, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
+}
+
+func parseBoolSlice(parts []string) ([]bool, error) {
+	var values []bool
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		value, err := strconv.ParseBool(trimmed)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
 }
 
 func invalidValueError() error {
