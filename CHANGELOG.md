@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Bumps `github.com/stretchr/testify` from 1.11.1 to 1.12.1 [#32](https://github.com/matzefriedrich/cobra-extensions/pull/32)
-* Decomposes `FlagDescriptor.SetValueFromText` into smaller parsing helpers to reduce complexity; adds characterization tests raising its coverage to 100% [#33](https://github.com/matzefriedrich/cobra-extensions/pull/33)
+* Decomposes `FlagDescriptor.SetValueFromText` into smaller parsing helpers to reduce complexity; adds characterization tests raising its coverage [#33](https://github.com/matzefriedrich/cobra-extensions/pull/33)
 
 
 ## [0.8.0] - 2026-08-03
