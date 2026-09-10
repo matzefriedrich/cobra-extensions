@@ -120,6 +120,17 @@ Cobra gives you flexibility - and with it, a lot of responsibility. You're on yo
 
 - Step down to raw Cobra at any time, `cobra-extensions` won´t prevent you from doing so.
 
+
+## Development
+
+```bash
+make install-tools   # install golangci-lint and goveralls into ./bin
+make lint            # run the linter
+make coverage        # run the CI coverage command and print the total
+```
+
+`make coverage` mirrors the CI pipeline exactly (cross-package `-coverpkg ./...` profile), so you can check coverage locally the same way the badge is computed.
+
 ---
 
 Copyright 2023 - 2026 by Matthias Friedrich
