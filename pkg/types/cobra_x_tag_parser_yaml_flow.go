@@ -94,12 +94,12 @@ func splitYamlFlowEntry(entry string) (string, string, bool) {
 		return "", "", false
 	}
 	key := strings.TrimSpace(entry[:separator])
-	value, valid := unquoteYamlScalar(strings.TrimSpace(entry[separator+1:]))
+	value, valid := unquoteTagScalar(strings.TrimSpace(entry[separator+1:]))
 	return key, value, valid
 }
 
-// unquoteYamlScalar removes one pair of surrounding single quotes, decoding doubled quotes as a literal apostrophe.
-func unquoteYamlScalar(value string) (string, bool) {
+// unquoteTagScalar removes one pair of surrounding single quotes, decoding doubled quotes as a literal apostrophe.
+func unquoteTagScalar(value string) (string, bool) {
 	if value == "" {
 		return "", true
 	}
