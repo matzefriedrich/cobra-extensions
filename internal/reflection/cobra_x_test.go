@@ -58,19 +58,6 @@ func Test_ReflectCommandDescriptor_with_cobra_x_tags(t *testing.T) {
 	assert.Equal(t, "Hello", defaultFlag.AsString())
 }
 
-func Test_parseCobraX_handles_commas_in_quotes(t *testing.T) {
-	// Arrange
-	tag := "-n|--name, help='Hello, World', default='Value'"
-
-	// Act
-	nameExpr, attrs := parseCobraX(tag)
-
-	// Assert
-	assert.Equal(t, "-n|--name", nameExpr)
-	assert.Equal(t, "Hello, World", attrs["help"])
-	assert.Equal(t, "Value", attrs["default"])
-}
-
 type cobraXFallbackCommand struct {
 	types.BaseCommand `cobra-x:"legacy"`
 }

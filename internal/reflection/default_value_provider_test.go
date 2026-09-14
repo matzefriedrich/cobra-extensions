@@ -86,7 +86,7 @@ func Test_reflectCobraXFlag_parses_setting_key_tag(t *testing.T) {
 	field, _ := structType.FieldByName("MyField")
 
 	// Act
-	tag, err := reflectCobraXFlag(field)
+	tag, err := reflectCobraXFlag(field, types.NewCompactTagParser())
 
 	// Assert
 	assert.NoError(t, err)

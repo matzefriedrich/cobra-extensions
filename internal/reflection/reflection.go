@@ -10,11 +10,17 @@ import (
 )
 
 type commandReflector[T any] struct {
+	tagParser types.CobraXTagParser
 }
 
-// NewCommandReflector Creates a new CommandReflector instance.
+// NewCommandReflector Creates a new CommandReflector instance using the default cobra-x DSL tag parser.
 func NewCommandReflector[T any]() types.CommandReflector[T] {
-	return &commandReflector[T]{}
+	return NewCommandReflectorWithTagParser[T](types.NewCompactTagParser())
+}
+
+// NewCommandReflectorWithTagParser Creates a new CommandReflector instance that parses cobra-x tags with the given parser.
+func NewCommandReflectorWithTagParser[T any](tagParser types.CobraXTagParser) types.CommandReflector[T] {
+	return &commandReflector[T]{tagParser: tagParser}
 }
 
 // ReflectCommandDescriptor Reflects all metadata from a command handler and returns a new CommandDescriptor instance.
@@ -44,13 +50,13 @@ func (r *commandReflector[T]) traverseFields(stack utils.Stack[valueItem], comma
 
 			field := next.valueType.Field(i)
 
-			if shouldSkipCommandField(field.Type, field, commandMetadata) {
+			if shouldSkipCommandField(field.Type, field, commandMetadata, r.tagParser) {
 				continue
 			}
 
 			fieldValue := next.value.Field(i)
 
-			if reflectArgumentsDescriptor(field.Type, fieldValue, arguments) {
+			if reflectArgumentsDescriptor(field.Type, fieldValue, arguments, r.tagParser) {
 				continue
 			}
 
@@ -60,7 +66,7 @@ func (r *commandReflector[T]) traverseFields(stack utils.Stack[valueItem], comma
 			}
 
 			if field.PkgPath == "" {
-				flagDescriptor, ok := reflectFlagDescriptor(field, fieldValue)
+				flagDescriptor, ok := reflectFlagDescriptor(field, fieldValue, r.tagParser)
 				if ok {
 					flags = append(flags, flagDescriptor)
 				}
@@ -110,11 +116,11 @@ func isCommandNameFieldType(fieldType reflect.Type) bool {
 
 // shouldSkipCommandField resolves the command tag for command-type fields, applies it to the metadata,
 // and reports whether the field should be skipped during reflection.
-func shouldSkipCommandField(fieldType reflect.Type, field reflect.StructField, metadata *commandMetadata) bool {
+func shouldSkipCommandField(fieldType reflect.Type, field reflect.StructField, metadata *commandMetadata, tagParser types.CobraXTagParser) bool {
 	if !isCommandFieldType(fieldType) {
 		return false
 	}
-	commandTag, skipField := resolveCommandTag(field)
+	commandTag, skipField := resolveCommandTag(field, tagParser)
 	if skipField {
 		return true
 	}
@@ -126,8 +132,8 @@ func shouldSkipCommandField(fieldType reflect.Type, field reflect.StructField, m
 
 // resolveCommandTag resolves the command tag using the cobra-x convention and falls back to the legacy convention.
 // skipField indicates that neither convention applies and the field should be ignored.
-func resolveCommandTag(field reflect.StructField) (commandTag *CobraXCommandTag, skipField bool) {
-	tag, tagErr := reflectCobraXCommand(field)
+func resolveCommandTag(field reflect.StructField, tagParser types.CobraXTagParser) (commandTag *CobraXCommandTag, skipField bool) {
+	tag, tagErr := reflectCobraXCommand(field, tagParser)
 	if tagErr != nil && errors.Is(tagErr, ErrCobraXCommandNotFound) {
 		tag, tagErr = reflectLegacyCommand(field)
 		if tagErr != nil && errors.Is(tagErr, ErrCobraXLegacyTagsNotFound) {
@@ -137,8 +143,8 @@ func resolveCommandTag(field reflect.StructField) (commandTag *CobraXCommandTag,
 	return tag, false
 }
 
-func reflectFlagDescriptor(field reflect.StructField, fieldValue reflect.Value) (FlagDescriptor, bool) {
-	tag, tagErr := reflectCobraXFlag(field)
+func reflectFlagDescriptor(field reflect.StructField, fieldValue reflect.Value, tagParser types.CobraXTagParser) (FlagDescriptor, bool) {
+	tag, tagErr := reflectCobraXFlag(field, tagParser)
 	if tagErr != nil {
 		tag, _ = reflectLegacyFlag(field)
 	}
@@ -163,7 +169,7 @@ func reflectFlagDescriptor(field reflect.StructField, fieldValue reflect.Value) 
 	return descriptor, true
 }
 
-func reflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, arguments types.ArgumentsDescriptor) bool {
+func reflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value, arguments types.ArgumentsDescriptor, tagParser types.CobraXTagParser) bool {
 	hasCommandArgs := false
 	reflectedObject := ReflectedObject{instanceValue: fieldValue, objectType: fieldType}
 	reflectedObject.EnumerateFields(func(index int, field ReflectedField) {
@@ -175,7 +181,7 @@ func reflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value
 			fallthrough
 		case reflect.Bool:
 			if hasCommandArgs {
-				descriptor := ArgumentDescriptor{typeKind: fieldTypeKind, value: field.value, argumentIndex: index - 1, displayName: field.cobraXArgumentName()}
+				descriptor := ArgumentDescriptor{typeKind: fieldTypeKind, value: field.value, argumentIndex: index - 1, displayName: field.cobraXArgumentName(tagParser)}
 				arguments.With(Args(descriptor))
 			}
 		case reflect.Interface:
