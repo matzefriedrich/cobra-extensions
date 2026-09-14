@@ -28,6 +28,7 @@ If you're okay with that, this package will save you time, and your CLI codebase
 - **Slice-valued flags** - map flags specified multiple times on the command line to slice fields (`[]string`, `[]int`, `[]int64`, `[]bool`).
 - **Markdown documentation generation** - generate Markdown docs for all registered commands and subcommands via `NewMarkdownCommand`.
 - **Default value providers** - let flags fall back to values from environment variables, YAML files, or any custom source (e.g., a vault backend) when not set on the command line.
+- **Pluggable cobra-x tag parsers** - choose between the compact DSL and conventional space-separated struct tags, or plug in a custom `types.CobraXTagParser`.
 
 
 ## Usage
@@ -97,6 +98,30 @@ The `cobra-x` tag supports:
 - Backward compatibility with legacy tags like `name`, `shorthand`, `usage`, and `default`.
 
 See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for complete usage examples.
+
+
+## Pluggable cobra-x tag parsers
+
+The `cobra-x` tags can be read in two interchangeable syntaxes: the compact DSL shown above and conventional space-separated struct tags. Both are implementations of the `types.CobraXTagParser` interface, so you can even plug in a parser of your own. The compact syntax keeps tags short and scannable; the conventional syntax uses fixed, well-known tag keys that can be validated at compile time. Pick the route that fits your project - the compact DSL is the default.
+
+To use the conventional form for all commands of an application, inject `types.NewStandardTagParser()` before adding typed commands:
+
+```go
+app := charmer.NewCommandLineApplication("demo", "A short description.")
+app.WithTagParser(types.NewStandardTagParser())
+app.AddTypedCommand(&greetCommand{})
+```
+
+Alternatively, give a single command its own parser:
+
+```go
+commands.CreateTypedCommandWithTagParser(&greetCommand{}, types.NewStandardTagParser())
+```
+
+> [!NOTE]
+> Commands are reflected at creation time, so commands created through an application must be added via `AddTypedCommand` for the application's parser to take effect.
+
+See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for the conventional tag syntax and complete usage examples.
 
 
 ## Positional arguments
