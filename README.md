@@ -102,7 +102,7 @@ See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com
 
 ## Pluggable cobra-x tag parsers
 
-The `cobra-x` tags can be read in two interchangeable syntaxes: the compact DSL shown above and conventional space-separated struct tags. Both are implementations of the `types.CobraXTagParser` interface, so you can even plug in a parser of your own. The compact syntax keeps tags short and scannable; the conventional syntax uses fixed, well-known tag keys that can be validated at compile time. Pick the route that fits your project - the compact DSL is the default.
+The `cobra-x` tags can be read in three interchangeable syntaxes: the compact DSL shown above, conventional space-separated struct tags, and flow-style YAML mappings. All are implementations of the `types.CobraXTagParser` interface, so you can even plug in a parser of your own. The compact syntax keeps tags short and scannable; the conventional syntax uses fixed, well-known tag keys that can be validated at compile time; the YAML-flow syntax keeps everything on one tag and lets values contain commas, colons, and apostrophes without escaping. Pick the route that fits your project - the compact DSL is the default.
 
 To use the conventional form for all commands of an application, inject `types.NewStandardTagParser()` before adding typed commands:
 
@@ -120,6 +120,15 @@ commands.CreateTypedCommandWithTagParser(&greetCommand{}, types.NewStandardTagPa
 
 > [!NOTE]
 > Commands are reflected at creation time, so commands created through an application must be added via `AddTypedCommand` for the application's parser to take effect.
+
+A third syntax reads the tag as a flow-style YAML mapping handled by `types.NewYamlFlowTagParser()`:
+
+```go
+types.BaseCommand `cobra-x:"{name: 'yaml-test', description: 'Yaml flow test command'}"`
+Name              string `cobra-x:"{name: '--name', shorthand: 'n', usage: 'Name to greet', default: 'World'}"`
+```
+
+Use the same `WithTagParser` and `CreateTypedCommandWithTagParser` injection points shown above. Values that would break a comma-separated DSL become plain quoted scalars - `default: 'host:8080,scope=all'` stays intact - and a doubled single quote decodes to a literal apostrophe (`'It''s fine.'`). For the complete syntax, escaping rules, and implementation details see [the introducing pull request](https://github.com/matzefriedrich/cobra-extensions/pull/40).
 
 See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for the conventional tag syntax and complete usage examples.
 
