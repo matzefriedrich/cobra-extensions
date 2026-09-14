@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+* Introduces a pluggable `types.CobraXTagParser` interface with two interchangeable implementations that read `cobra-x` struct tags into a name expression and an attribute map: the compact DSL parser (`types.NewCompactTagParser`, the default) and a conventional parser for space-separated struct tags (`types.NewStandardTagParser`, e.g. `cobra-x:"--name" cobra-x-shorthand:"n" cobra-x-usage:"..."`). [#39](https://github.com/matzefriedrich/cobra-extensions/pull/39)
+* `CommandLineApplication.WithTagParser` switches the tag parser used for the application's typed commands; commands must be registered via `CommandLineApplication.AddTypedCommand` or `commands.CreateTypedCommandWithTagParser` for the chosen parser to take effect. [#39](https://github.com/matzefriedrich/cobra-extensions/pull/39)
+
 
 ## [0.10.0] - 2026-09-14
 

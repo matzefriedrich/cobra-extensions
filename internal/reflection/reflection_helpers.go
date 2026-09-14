@@ -3,6 +3,8 @@ package reflection
 import (
 	"reflect"
 	"strings"
+
+	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 )
 
 // ReflectedObject is a struct that wraps reflection information for a given object instance.
@@ -62,11 +64,10 @@ func (f *ReflectedField) getInterfaceValue() interface{} {
 }
 
 // cobraXArgumentName resolves the positional argument display name from the cobra-x tag, if present.
-func (f *ReflectedField) cobraXArgumentName() string {
-	tag := f.field.Tag.Get(cobraXTag)
-	if tag == "" {
+func (f *ReflectedField) cobraXArgumentName(tagParser types.CobraXTagParser) string {
+	if f.field.Tag.Get(types.CobraXTagKey) == "" {
 		return ""
 	}
-	name, _ := parseCobraX(tag)
+	name, _ := tagParser.ParseField(f.field)
 	return strings.TrimSpace(name)
 }
