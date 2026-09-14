@@ -175,7 +175,7 @@ func reflectArgumentsDescriptor(fieldType reflect.Type, fieldValue reflect.Value
 			fallthrough
 		case reflect.Bool:
 			if hasCommandArgs {
-				descriptor := ArgumentDescriptor{typeKind: fieldTypeKind, value: field.value, argumentIndex: index - 1}
+				descriptor := ArgumentDescriptor{typeKind: fieldTypeKind, value: field.value, argumentIndex: index - 1, displayName: field.cobraXArgumentName()}
 				arguments.With(Args(descriptor))
 			}
 		case reflect.Interface:

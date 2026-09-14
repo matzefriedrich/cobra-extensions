@@ -21,6 +21,51 @@ type behaviorCommand struct {
 	BoolFlag          bool     `cobra-x:"--on"`
 }
 
+type positionalArgsCommand struct {
+	types.BaseCommand `cobra-x:"positional"`
+	Arguments         positionalArgsStruct
+}
+
+type positionalArgsStruct struct {
+	types.CommandArgs
+	Greeting string `cobra-x:"greeting"`
+}
+
+func Test_commandReflector_reflect_command_descriptor_appends_positional_placeholders_to_use(t *testing.T) {
+	tests := []struct {
+		name        string
+		arguments   positionalArgsStruct
+		expectedUse string
+	}{
+		{
+			name:        "renders_optional_placeholder_with_default_minimum_args",
+			arguments:   positionalArgsStruct{},
+			expectedUse: "positional [greeting]",
+		},
+		{
+			name:        "renders_required_placeholder_when_minimum_args_required",
+			arguments:   positionalArgsStruct{CommandArgs: types.NewCommandArgs(types.MinimumArgumentsRequired(1))},
+			expectedUse: "positional <greeting>",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Arrange
+			reflector := NewCommandReflector[*positionalArgsCommand]()
+			handler := &positionalArgsCommand{Arguments: tt.arguments}
+
+			// Act
+			descriptor := reflector.ReflectCommandDescriptor(handler)
+			cmd := &cobra.Command{}
+			descriptor.BindArguments(cmd)
+
+			// Assert
+			assert.Equal(t, tt.expectedUse, cmd.Use)
+		})
+	}
+}
+
 func Test_commandReflector_reflect_command_descriptor_creates_cobra_flags_with_expected_types_and_defaults(t *testing.T) {
 	// Arrange
 	reflector := NewCommandReflector[*behaviorCommand]()

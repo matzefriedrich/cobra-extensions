@@ -4,11 +4,12 @@ import (
 	"reflect"
 )
 
-// ArgumentDescriptor represents metadata for an argument, including its index, value, and type kind.
+// ArgumentDescriptor represents metadata for an argument, including its index, value, type kind, and display name.
 type ArgumentDescriptor struct {
 	argumentIndex int
 	value         reflect.Value
 	typeKind      reflect.Kind
+	displayName   string
 }
 
 // ArgumentIndex returns the index of the argument represented by the ArgumentDescriptor.
