@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+
+## [0.10.0] - 2026-09-14
+
 ### Added
 
 * Adds unit tests for the `Stack` type in `internal/utils`, the `internal/utils/ternary` helpers, and `types.CobraXError` [#36](https://github.com/matzefriedrich/cobra-extensions/pull/36)

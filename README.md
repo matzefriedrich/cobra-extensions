@@ -99,6 +99,46 @@ The `cobra-x` tag supports:
 See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for complete usage examples.
 
 
+## Positional arguments
+
+Besides flags, you can bind unnamed command-line values to struct fields. Declare a plain struct that embeds a `types.CommandArgs` field, followed by the positional fields in the order they appear on the command line:
+
+```go
+type greetArgs struct {
+    types.CommandArgs
+    Name string `cobra-x:"name"`
+}
+
+type greetCommand struct {
+    types.BaseCommand `cobra-x:"greet, help='Greet someone'"`
+    Arguments         greetArgs
+}
+```
+
+Each positional field is bound in declaration order, so `greet Alice` sets `Arguments.Name` to `"Alice"`.
+
+To require a minimum number of positional arguments, configure the `CommandArgs` field:
+
+```go
+Arguments greetArgs
+
+// ...
+
+Arguments: greetArgs{CommandArgs: types.NewCommandArgs(types.MinimumArgumentsRequired(1))},
+```
+
+Since version `v0.10.0`, a positional field with a `cobra-x` tag (e.g. `cobra-x:"name"`) renders its placeholder in the command's `Use` string and the `--help` Usage line. Placeholders in required positions render as `<name>`; the remaining ones render as `[name]`:
+
+```
+Usage:
+  demo greet <name> [flags]
+```
+
+Untagged positional fields still bind at runtime but are omitted from the `Use` string.
+
+See [https://github.com/matzefriedrich/cobra-extensions-docs](https://github.com/matzefriedrich/cobra-extensions-docs) for complete usage examples.
+
+
 ## Default value providers
 
 Since version `v0.8.0`, flags can automatically receive their values from an external configuration source (environment variables, YAML files, or a custom backend like a vault service) whenever they are not explicitly set on the command line. A flag opts in via the `setting-key` attribute on its `cobra-x` tag, and a `DefaultValueProvider` is injected into the application to resolve values, with the command line always taking precedence.
