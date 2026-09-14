@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Adds unit tests for the `Stack` type in `internal/utils`, the `internal/utils/ternary` helpers, and `types.CobraXError` [#36](https://github.com/matzefriedrich/cobra-extensions/pull/36)
+* Positional command arguments declared in a `types.CommandArgs` struct now appear in the generated command `Use` string (and thus the `--help` Usage line) when their fields carry a `cobra-x` tag (e.g. `Name string cobra-x:"name"`). Placeholders render as `<name>` when the argument slot is below `MinimumArgs` (required) and `[name]` otherwise. [#38](https://github.com/matzefriedrich/cobra-extensions/pull/38)
 
 
 ## [0.9.0] - 2026-09-10

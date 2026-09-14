@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // ArgumentsDescriptor Stores arguments metadata.
@@ -18,6 +19,38 @@ var _ types.ArgumentsDescriptor = (*argumentsDescriptor)(nil)
 // BindArguments sets the minimum number of positional arguments required for the given Cobra command.
 func (d *argumentsDescriptor) BindArguments(target *cobra.Command) {
 	target.Args = cobra.MinimumNArgs(d.minimumArgs)
+	d.appendUseArgumentPlaceholders(target)
+}
+
+// appendUseArgumentPlaceholders appends the positional argument placeholders to the command's Use string.
+func (d *argumentsDescriptor) appendUseArgumentPlaceholders(target *cobra.Command) {
+	placeholders := d.renderPlaceholders()
+	if len(placeholders) == 0 {
+		return
+	}
+	useWithPlaceholders := target.Use + " " + strings.Join(placeholders, " ")
+	target.Use = strings.TrimSpace(useWithPlaceholders)
+}
+
+func (d *argumentsDescriptor) renderPlaceholders() []string {
+	placeholders := make([]string, 0, len(d.args))
+	for _, argument := range d.args {
+		placeholder := renderArgumentPlaceholder(argument, d.minimumArgs)
+		if placeholder != "" {
+			placeholders = append(placeholders, placeholder)
+		}
+	}
+	return placeholders
+}
+
+func renderArgumentPlaceholder(argument ArgumentDescriptor, minimumArgs int) string {
+	if argument.displayName == "" {
+		return ""
+	}
+	if argument.argumentIndex < minimumArgs {
+		return "<" + argument.displayName + ">"
+	}
+	return "[" + argument.displayName + "]"
 }
 
 // BindArgumentValues Sets the given set of values to positional argument fields.

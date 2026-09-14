@@ -1,6 +1,9 @@
 package reflection
 
-import "reflect"
+import (
+	"reflect"
+	"strings"
+)
 
 // ReflectedObject is a struct that wraps reflection information for a given object instance.
 type ReflectedObject struct {
@@ -56,4 +59,14 @@ func (f *ReflectedField) isType(target any) bool {
 
 func (f *ReflectedField) getInterfaceValue() interface{} {
 	return f.value.Interface()
+}
+
+// cobraXArgumentName resolves the positional argument display name from the cobra-x tag, if present.
+func (f *ReflectedField) cobraXArgumentName() string {
+	tag := f.field.Tag.Get(cobraXTag)
+	if tag == "" {
+		return ""
+	}
+	name, _ := parseCobraX(tag)
+	return strings.TrimSpace(name)
 }

@@ -74,9 +74,7 @@ func Test_CreateTypedCommand_with_base_template_default_values(t *testing.T) {
 	expectedP2 := int64(76)
 
 	instance := &testCommand2{
-		testCommand1: testCommand1{
-			P1: expectedP1,
-		},
+		P1: expectedP1,
 		P2: expectedP2,
 	}
 
@@ -136,6 +134,30 @@ func Test_CreateTypedCommand_with_positional_args(t *testing.T) {
 	assert.Equal(t, "Hello", arguments.TextArgument)
 	assert.Equal(t, int64(5), arguments.NumericArgument)
 	assert.Equal(t, true, arguments.BooleanArgument)
+}
+
+type testCommandWithTaggedPositionalArgs struct {
+	types.BaseCommand `cobra-x:"test4"`
+	Arguments         testCommandTaggedArgs
+}
+
+type testCommandTaggedArgs struct {
+	types.CommandArgs
+	TextArgument string `cobra-x:"text"`
+}
+
+func (t *testCommandWithTaggedPositionalArgs) Execute(_ context.Context) {
+}
+
+func Test_CreateTypedCommand_with_tagged_positional_args_appends_placeholders_to_use(t *testing.T) {
+	// Arrange
+	instance := &testCommandWithTaggedPositionalArgs{}
+
+	// Act
+	cmd := CreateTypedCommand(instance)
+
+	// Assert
+	assert.Equal(t, "test4 [text]", cmd.Use)
 }
 
 func Test_NonRunnable_unsets_Run_and_RunE_fields(t *testing.T) {
