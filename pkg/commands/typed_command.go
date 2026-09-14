@@ -22,10 +22,18 @@ func (c *commandContextValue) run(ctx context.Context, target *cobra.Command, ar
 	c.handler.Execute(ctx)
 }
 
-// CreateTypedCommand Creates a new typed command from the given handler instance.
+// CreateTypedCommand Creates a new typed command from the given handler instance using the default cobra-x DSL tag parser.
 func CreateTypedCommand[T types.TypedCommand](instance T, options ...func() CommandOption) *cobra.Command {
+	return createTypedCommand(instance, reflection.NewCommandReflector[T](), options...)
+}
 
-	reflector := reflection.NewCommandReflector[T]()
+// CreateTypedCommandWithTagParser Creates a new typed command from the given handler instance using the given cobra-x tag parser.
+func CreateTypedCommandWithTagParser[T types.TypedCommand](instance T, tagParser types.CobraXTagParser, options ...func() CommandOption) *cobra.Command {
+	return createTypedCommand(instance, reflection.NewCommandReflectorWithTagParser[T](tagParser), options...)
+}
+
+func createTypedCommand[T types.TypedCommand](instance T, reflector types.CommandReflector[T], options ...func() CommandOption) *cobra.Command {
+
 	desc := reflector.ReflectCommandDescriptor(instance)
 
 	cmd := &cobra.Command{
