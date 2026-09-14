@@ -12,6 +12,7 @@ import (
 type CommandLineApplication struct {
 	root                 *cobra.Command
 	defaultValueProvider types.DefaultValueProvider
+	tagParser            types.CobraXTagParser
 }
 
 // NewRootCommand Creates a new cobra.Command object to be used as the application root command.
@@ -29,7 +30,8 @@ func NewRootCommand(name string, description string) *cobra.Command {
 func NewCommandLineApplication(name string, description string) *CommandLineApplication {
 	rootCommand := NewRootCommand(name, description)
 	app := &CommandLineApplication{
-		root: rootCommand,
+		root:      rootCommand,
+		tagParser: types.NewCompactTagParser(),
 	}
 	app.AddCommand(commands.NewMarkdownDocsCommand(rootCommand))
 	return app
@@ -50,6 +52,18 @@ func (a *CommandLineApplication) Execute(ctx context.Context) error {
 func (a *CommandLineApplication) WithDefaultValueProvider(provider types.DefaultValueProvider) *CommandLineApplication {
 	a.defaultValueProvider = provider
 	return a
+}
+
+// WithTagParser sets the CobraXTagParser used to interpret cobra-x tags for typed commands added to this application.
+func (a *CommandLineApplication) WithTagParser(tagParser types.CobraXTagParser) *CommandLineApplication {
+	a.tagParser = tagParser
+	return a
+}
+
+// AddTypedCommand Reflects the given typed command handler into a cobra.Command using the configured tag parser and adds it to the root command.
+func (a *CommandLineApplication) AddTypedCommand[T types.TypedCommand](handler T, options ...func() commands.CommandOption) *CommandLineApplication {
+	typedCommand := commands.CreateTypedCommandWithTagParser(handler, a.tagParser, options...)
+	return a.AddCommand(typedCommand)
 }
 
 // AddCommand Adds one or more commands to the root command of the CommandLineApplication.
