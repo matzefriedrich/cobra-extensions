@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.11.0] - 2026-10-24
+
 ### Added
 
+* Supports command aliases through the `alias` attribute in `cobra-x` tags, including comma-separated aliases; aliases are available with the compact, standard, and YAML-flow tag parsers. [#42](https://github.com/matzefriedrich/cobra-extensions/issues/42)
 * Introduces a pluggable `types.CobraXTagParser` interface with two interchangeable implementations that read `cobra-x` struct tags into a name expression and an attribute map: the compact DSL parser (`types.NewCompactTagParser`, the default) and a conventional parser for space-separated struct tags (`types.NewStandardTagParser`, e.g. `cobra-x:"--name" cobra-x-shorthand:"n" cobra-x-usage:"..."`). [#39](https://github.com/matzefriedrich/cobra-extensions/pull/39)
 * `CommandLineApplication.WithTagParser` switches the tag parser used for the application's typed commands; commands must be registered via `CommandLineApplication.AddTypedCommand` or `commands.CreateTypedCommandWithTagParser` for the chosen parser to take effect. [#39](https://github.com/matzefriedrich/cobra-extensions/pull/39)
 

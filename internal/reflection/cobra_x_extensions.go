@@ -3,6 +3,7 @@ package reflection
 import (
 	"errors"
 	"reflect"
+	"strings"
 
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
 )
@@ -16,6 +17,7 @@ type CobraXCommandTag struct {
 	Use         string
 	Help        string
 	Description string
+	Aliases     []string
 }
 
 type CobraXFlagTag struct {
@@ -44,12 +46,25 @@ func reflectCobraXCommand(field reflect.StructField, tagParser types.CobraXTagPa
 	use, attributes := tagParser.ParseField(field)
 	help := attributes[types.HelpAttribute]
 	description := attributes[types.DescriptionAttribute]
+	aliases := splitCommandAliases(attributes[types.AliasAttribute])
 	return &CobraXCommandTag{
 		CobraXTag:   CobraXTag{Attributes: attributes},
 		Use:         use,
 		Help:        help,
 		Description: description,
+		Aliases:     aliases,
 	}, nil
+}
+
+func splitCommandAliases(value string) []string {
+	if value == "" {
+		return nil
+	}
+	aliases := strings.Split(value, ",")
+	for i := range aliases {
+		aliases[i] = strings.TrimSpace(aliases[i])
+	}
+	return aliases
 }
 
 func reflectCobraXFlag(field reflect.StructField, tagParser types.CobraXTagParser) (*CobraXFlagTag, error) {

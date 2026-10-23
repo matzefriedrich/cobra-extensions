@@ -13,6 +13,7 @@ type commandDescriptor struct {
 	use                  string
 	short                string
 	long                 string
+	aliases              []string
 	flags                []FlagDescriptor
 	arguments            types.ArgumentsDescriptor
 	defaultValueProvider types.DefaultValueProvider
@@ -21,11 +22,12 @@ type commandDescriptor struct {
 var _ types.CommandDescriptor = (*commandDescriptor)(nil)
 
 // NewCommandDescriptor creates a new CommandDescriptor with specified use, short and long descriptions, flags, and arguments.
-func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments types.ArgumentsDescriptor) types.CommandDescriptor {
+func NewCommandDescriptor(use string, short string, long string, flags []FlagDescriptor, arguments types.ArgumentsDescriptor, aliases ...string) types.CommandDescriptor {
 	return &commandDescriptor{
 		use:       use,
 		short:     short,
 		long:      long,
+		aliases:   aliases,
 		flags:     flags,
 		arguments: arguments,
 	}
@@ -139,6 +141,9 @@ func (d *commandDescriptor) BindArguments(target *cobra.Command) {
 	target.Use = d.use
 	target.Short = d.short
 	target.Long = d.long
+	if len(d.aliases) > 0 {
+		target.Aliases = append([]string(nil), d.aliases...)
+	}
 
 	d.arguments.BindArguments(target)
 }

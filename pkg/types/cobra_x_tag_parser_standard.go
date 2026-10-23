@@ -43,6 +43,7 @@ var standardAttributeTags = map[string]string{
 	"cobra-x-usage":       UsageAttribute,
 	"cobra-x-default":     DefaultValueAttribute,
 	"cobra-x-setting-key": SettingKeyAttribute,
+	"cobra-x-alias":       AliasAttribute,
 }
 
 func collectAttribute(field reflect.StructField, tagKey string, attributeKey string, attributes map[string]string) {

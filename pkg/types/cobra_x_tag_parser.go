@@ -12,6 +12,7 @@ const (
 	UsageAttribute        = "usage"
 	DefaultValueAttribute = "default"
 	SettingKeyAttribute   = "setting-key"
+	AliasAttribute        = "alias"
 )
 
 // CobraXTagParser parses the cobra-x tags of a struct field into a name expression and an attributes map.

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/matzefriedrich/cobra-extensions/pkg/types"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -83,6 +84,10 @@ type descriptionTagCommand struct {
 	_ types.BaseCommand `cobra-x:"desccmd, help='short text', description='long text from description'"`
 }
 
+type commandWithAliases struct {
+	_ types.BaseCommand `cobra-x:"merge-requests, alias='mr,mrs'"`
+}
+
 func Test_ReflectCommandDescriptor_with_description_tag(t *testing.T) {
 	// Arrange
 	reflector := NewCommandReflector[*descriptionTagCommand]()
@@ -95,4 +100,17 @@ func Test_ReflectCommandDescriptor_with_description_tag(t *testing.T) {
 	assert.Equal(t, "desccmd", descriptor.use)
 	assert.Equal(t, "short text", descriptor.short)
 	assert.Equal(t, "long text from description", descriptor.long)
+}
+
+func Test_ReflectCommandDescriptor_with_command_aliases(t *testing.T) {
+	// Arrange
+	reflector := NewCommandReflector[*commandWithAliases]()
+	descriptor := reflector.ReflectCommandDescriptor(&commandWithAliases{})
+	cmd := &cobra.Command{}
+
+	// Act
+	descriptor.BindArguments(cmd)
+
+	// Assert
+	assert.Equal(t, []string{"mr", "mrs"}, cmd.Aliases)
 }
