@@ -141,7 +141,9 @@ func (d *commandDescriptor) BindArguments(target *cobra.Command) {
 	target.Use = d.use
 	target.Short = d.short
 	target.Long = d.long
-	target.Aliases = append([]string(nil), d.aliases...)
+	if len(d.aliases) > 0 {
+		target.Aliases = append([]string(nil), d.aliases...)
+	}
 
 	d.arguments.BindArguments(target)
 }

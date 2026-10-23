@@ -230,6 +230,18 @@ func Test_commandDescriptor_bind_flags_does_nothing_when_target_is_nil(t *testin
 	})
 }
 
+func Test_commandDescriptor_bind_arguments_preserves_preconfigured_aliases_when_none_are_reflected(t *testing.T) {
+	// Arrange
+	descriptor := NewCommandDescriptor("test", "short", "long", nil, NewArgumentsDescriptorWith())
+	cmd := &cobra.Command{Aliases: []string{"existing"}}
+
+	// Act
+	descriptor.BindArguments(cmd)
+
+	// Assert
+	assert.Equal(t, []string{"existing"}, cmd.Aliases)
+}
+
 func Test_commandDescriptor_bind_arguments_does_nothing_when_target_is_nil(t *testing.T) {
 	descriptor := NewCommandDescriptor("test", "short", "long", nil, NewArgumentsDescriptorWith())
 	assert.NotPanics(t, func() {
