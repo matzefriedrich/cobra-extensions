@@ -36,7 +36,7 @@ func (r *commandReflector[T]) ReflectCommandDescriptor(handler T) types.CommandD
 
 	flags := r.traverseFields(stack, commandMetadata, arguments)
 
-	return NewCommandDescriptor(commandMetadata.use, commandMetadata.shortHelpText, commandMetadata.longHelpText, flags, arguments)
+	return NewCommandDescriptor(commandMetadata.use, commandMetadata.shortHelpText, commandMetadata.longHelpText, flags, arguments, commandMetadata.aliases...)
 }
 
 func (r *commandReflector[T]) traverseFields(stack utils.Stack[valueItem], commandMetadata *commandMetadata, arguments types.ArgumentsDescriptor) []FlagDescriptor {
@@ -96,12 +96,14 @@ type commandMetadata struct {
 	use           string
 	shortHelpText string
 	longHelpText  string
+	aliases       []string
 }
 
 func (m *commandMetadata) Update(tag *CobraXCommandTag) {
 	m.use = ternary.ValueOrDefault(tag.Use, ternary.NotNilOrWhitespace, m.use)
 	m.shortHelpText = ternary.ValueOrDefault(tag.Help, ternary.NotNilOrWhitespace, m.shortHelpText)
 	m.longHelpText = ternary.ValueOrDefault(tag.Description, ternary.NotNilOrWhitespace, m.longHelpText)
+	m.aliases = append(m.aliases, tag.Aliases...)
 }
 
 func isCommandFieldType(fieldType reflect.Type) bool {

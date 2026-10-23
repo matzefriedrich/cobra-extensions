@@ -13,6 +13,7 @@ var yamlFlowAttributeKeys = map[string]string{
 	"description": DescriptionAttribute,
 	"usage":       UsageAttribute,
 	"default":     DefaultValueAttribute,
+	"alias":       AliasAttribute,
 }
 
 // NewYamlFlowTagParser Creates a parser for cobra-x tags written as a flow-style YAML mapping,
